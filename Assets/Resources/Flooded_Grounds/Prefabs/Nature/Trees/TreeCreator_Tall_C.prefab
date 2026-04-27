@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 19310186}
   - component: {fileID: 3380234}
   - component: {fileID: 2393040}
+  - component: {fileID: 8627435762043431455}
   m_Layer: 0
   m_Name: TreeCreator_Tall_C
   m_TagString: Untagged
@@ -101,6 +102,29 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!136 &8627435762043431455
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 196434}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 2.8158665
+  m_Height: 37.419197
+  m_Direction: 1
+  m_Center: {x: -0.6774559, y: 17.709599, z: 0.16015244}
 --- !u!21 &2179674
 Material:
   serializedVersion: 8
@@ -114,6 +138,7 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - EFFECT_BUMP
+  - GEOM_TYPE_LEAF
   m_InvalidKeywords:
   - _EMISSION
   - _NORMALMAP
@@ -210,7 +235,7 @@ Material:
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
-    - _Cull: 2
+    - _Cull: 0
     - _Cutoff: 0.4
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
@@ -597,7 +622,7 @@ MonoBehaviour:
   m_Name: Tree Data
   m_EditorClassIdentifier: 
   _uniqueID: 5462
-  materialHash: 2e5b7d5d51c05d86f59e6597542e9819-550813696
+  materialHash: f8c0e078c6124bd22282334606976e4a-550813696
   root:
     _uniqueID: 1
     seed: 1234

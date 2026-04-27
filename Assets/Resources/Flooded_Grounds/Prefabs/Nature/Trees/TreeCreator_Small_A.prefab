@@ -90,7 +90,7 @@ MeshRenderer:
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
   m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
+  m_SelectedEditorRenderState: 0
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
@@ -112,7 +112,8 @@ Material:
   m_Shader: {fileID: 4800000, guid: 0f4122b9a743b744abe2fb6a0a88868b, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - GEOM_TYPE_LEAF
   m_InvalidKeywords: []
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 0
@@ -150,7 +151,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Cull: 2
+    - _Cull: 0
     - _Cutoff: 0.4
     - _ShadowOffsetScale: 1
     - _ShadowStrength: 0.9
@@ -428,7 +429,7 @@ MonoBehaviour:
   m_Name: Tree Data
   m_EditorClassIdentifier: 
   _uniqueID: 3250
-  materialHash: dc8d9b4bb1c3a89725413e556bcf5032215482368
+  materialHash: 1bb1e856e6e7ab631689dbb3003a1767215482368
   root:
     _uniqueID: 1
     seed: 1234
