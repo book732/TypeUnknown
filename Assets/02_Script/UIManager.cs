@@ -13,7 +13,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject _settingPanel;
     [SerializeField] private Slider _volumeSlider;
     [SerializeField] private Button _quitMenuButton;
-    [SerializeField] private AudioMixer  _audioMixer; 
     
     private void OnEnable()
     {
@@ -22,7 +21,7 @@ public class UIManager : MonoBehaviour
         _quitButton.onClick.AddListener(OnQuitButtonClick);
         _settingPanel.SetActive(false);
         _quitMenuButton.onClick.AddListener(OnQuitMenuButtonClick);
-        _volumeSlider.onValueChanged.AddListener(SetVolume);
+        _volumeSlider.onValueChanged.AddListener(AudioManager.Instance.SetVolume);
     }
 
 
@@ -32,13 +31,12 @@ public class UIManager : MonoBehaviour
         _settingButton.onClick.RemoveListener(OnSettingsButtonClick);
         _quitButton.onClick.RemoveListener(OnQuitButtonClick);
         _quitMenuButton.onClick.RemoveListener(OnQuitMenuButtonClick);
-        
+        _volumeSlider.onValueChanged.RemoveListener(AudioManager.Instance.SetVolume);
     }
 
     private void OnStartButtonClick()
     {
         SceneManager.LoadScene("Main");
-        SceneManager.LoadScene("UI", LoadSceneMode.Additive);
     }
 
     private void OnSettingsButtonClick()
@@ -48,23 +46,10 @@ public class UIManager : MonoBehaviour
 
     private void OnQuitButtonClick()
     {
-        Debug.Log("Quit");
-        Application.Quit();
+        GameManager.Instance.QuitGame();
     }
     private void OnQuitMenuButtonClick()
     {
         _settingPanel.SetActive(false);
-    }
-
-    private void SetVolume(float volume)
-    {
-        if (volume <= 0.01)
-        {
-            _audioMixer.SetFloat("Volume", -80f);
-        }
-        else
-        {
-            _audioMixer.SetFloat("Volume", (float)(Math.Log10(volume) * 20));
-        }
     }
 }
