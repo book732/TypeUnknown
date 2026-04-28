@@ -1,0 +1,145 @@
+using System.Collections;
+using UnityEngine;
+
+public class KeyMonster : BaseMonster
+{
+    private readonly int hashIsWalking = Animator.StringToHash("Walking");
+    private readonly int hashIsRun = Animator.StringToHash("Run");
+    private readonly int hashIsAttack = Animator.StringToHash("Attack");
+    private Vector3 _monsterMove;
+    private Vector3 _monsterWalkPos;
+    private Coroutine _stopMonsterIdle;
+    private float PosX;
+    private float PosY;
+    [SerializeField] private float walkstopDistance;
+    protected override void Init()
+    {
+        base.Init();
+
+        _stopTime = new WaitForSeconds(5f);
+        _runSpeed = 3f;
+        _walkSpeed = 1f;
+        _damage = 20f;
+        _traceDist = 10f;
+        _attackDist = 2f;
+        PosX = Random.Range(-5f, 5f);
+        PosY = Random.Range(-5f, 5f);
+        _monsterMove = new Vector3(PosX,0f,PosY);
+        _monsterWalkPos = this.transform.position + _monsterMove;
+        walkstopDistance = 2f * 2f;
+        _stopMonsterIdle = null;
+        
+        _monsterState = MonsterState.IDLE;
+        
+        StartCoroutine(CheckMonsterStateCo());
+        StartCoroutine(MonsterSetStateCo());
+        _stopMonsterIdle = StartCoroutine(MonsterSetState2Co());
+    }
+
+    IEnumerator MonsterSetState2Co()
+    {
+        while (true)
+        {
+            if (_monsterState == MonsterState.ATTACK || _monsterState == MonsterState.TRACERUN)
+            {
+                yield return _ws;
+                continue;
+            }
+            
+            switch (_monsterState)
+            {
+                case MonsterState.IDLE:
+                    _navMeshAgent.isStopped = true;
+                    _navMeshAgent.ResetPath();
+                    _animator.SetBool(hashIsWalking, false);
+                    _animator.SetBool(hashIsRun, false);
+                    yield return _stopTime;
+                    SetMonsterDestination();
+                    _monsterState = MonsterState.WALKING;
+                    Debug.Log("_monsterState is walking");
+                    break;
+                case MonsterState.WALKING:
+                    _animator.SetBool(hashIsWalking, true);
+                    _navMeshAgent.isStopped = false;
+                    
+                    float dist = (_monsterWalkPos - this.transform.position).sqrMagnitude;
+                    
+                    if (_navMeshAgent.remainingDistance <= walkstopDistance)
+                    {
+                        _monsterState = MonsterState.IDLE;
+                        Debug.Log("_monsterState is idle");
+                    }
+
+                    break;
+            }
+            yield return _ws;
+        }
+        yield return null;
+    }
+    
+    
+    IEnumerator MonsterSetStateCo()
+    {
+        while (true)
+        {
+            switch (_monsterState)
+            {
+                case MonsterState.TRACERUN:
+                    _animator.SetBool(hashIsWalking, false);
+                    _animator.SetBool(hashIsAttack, false);
+                    _animator.SetBool(hashIsRun, true);
+                    _navMeshAgent.SetDestination(_playerTransform.position);
+                    _navMeshAgent.speed = _runSpeed;
+                    _navMeshAgent.isStopped = false;
+                    break;
+                case MonsterState.ATTACK:
+                    _animator.SetBool(hashIsWalking, false);
+                    _animator.SetBool(hashIsRun, false);
+                    _animator.SetBool(hashIsAttack, true);
+                    _navMeshAgent.ResetPath();
+                    //TODO: 잡기모션 추가 
+                    //TODO: 
+                    _navMeshAgent.isStopped = true;
+                    break;
+            }
+            yield return _ws;
+        }
+
+        yield return null;
+    }
+    
+    IEnumerator CheckMonsterStateCo()
+    {
+        while (true)
+        {
+            float dist = (_playerTransform.position - this.transform.position).sqrMagnitude;
+            if (dist < _attackDist * _attackDist)
+            {
+                _monsterState = MonsterState.ATTACK;
+            }
+            else if (dist < _traceDist * _traceDist)
+            {
+                _monsterState = MonsterState.TRACERUN;
+            }
+            else if(_monsterState != MonsterState.IDLE && _monsterState != MonsterState.WALKING && dist > _attackDist * _attackDist)
+            {
+                _monsterState = MonsterState.IDLE;
+            }
+            yield return _ws;
+        }
+
+        yield return null;
+    }
+
+
+
+    private void SetMonsterDestination()
+    {
+        PosX = Random.Range(-10f, 10f);
+        PosY = Random.Range(-10f, 10f);
+        _monsterMove = new Vector3(PosX,0f,PosY);
+        _monsterWalkPos =  this.transform.position + _monsterMove;
+        _navMeshAgent.SetDestination(_monsterWalkPos);
+        _navMeshAgent.speed = _walkSpeed;
+    }
+}
