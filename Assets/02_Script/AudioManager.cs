@@ -24,11 +24,12 @@ public class AudioManager : MonoBehaviour
     {
         if (volume <= 0.01)
         {
-            _audioMixer.SetFloat("Volume", -80f);
+            _audioMixer.SetFloat("VOLUME", -80f);
         }
         else
         {
-            _audioMixer.SetFloat("Volume", (float)(Math.Log10(volume) * 20));
+            _audioMixer.SetFloat("VOLUME", (float)(Math.Log10(volume) * 20));
         }
+        PlayerPrefs.SetFloat("VOLUME", volume);
     }
 }

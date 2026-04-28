@@ -16,6 +16,7 @@ public class UIManager : MonoBehaviour
     
     private void OnEnable()
     {
+        LoadVolume();
         _startButton.onClick.AddListener(OnStartButtonClick);
         _settingButton.onClick.AddListener(OnSettingsButtonClick);
         _quitButton.onClick.AddListener(OnQuitButtonClick);
@@ -51,5 +52,10 @@ public class UIManager : MonoBehaviour
     private void OnQuitMenuButtonClick()
     {
         _settingPanel.SetActive(false);
+    }
+    
+    private void LoadVolume()
+    {
+        _volumeSlider.value = PlayerPrefs.GetFloat("VOLUME",1f);
     }
 }

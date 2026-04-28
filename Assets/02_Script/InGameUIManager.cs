@@ -16,6 +16,7 @@ public class InGameUIManager : MonoBehaviour
 
     private void OnEnable()
     {
+        LoadVolume();
         GameManager.Instance.PauseGame();
         _quitButton.onClick.AddListener(OnQuitButtonClick);
         _settingButton.onClick.AddListener(OnSettingsButtonClick);
@@ -52,5 +53,10 @@ public class InGameUIManager : MonoBehaviour
     {
         SceneManager.UnloadSceneAsync("UI");
         GameManager.Instance.ResumeGame();
+    }
+
+    private void LoadVolume()
+    {
+        _volumeSlider.value = PlayerPrefs.GetFloat("VOLUME",1f);
     }
 }
