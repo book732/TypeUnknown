@@ -8,8 +8,11 @@ public class InputEventSO : ScriptableObject
     public Action<Vector2> OnMove;
     public Action OnJump;
     public Action<Vector2> OnLook;
+    public Action OnPickup;
+    public Action OnInteract;
+    public Action<Vector2> OnChangeItem;
 
-
+    #region 이동
     public void SubscribeMove(Action<Vector2> listener)
     {
         OnMove += listener;
@@ -20,11 +23,68 @@ public class InputEventSO : ScriptableObject
         OnMove -= listener;
     }
 
-
     public void RaiseMoveEvent(Vector2 input)
     {
         OnMove?.Invoke(input);
         //  Debug.Log("Move Event Raised: " + input);
     }
+    #endregion
 
+
+    #region 아이템줍기
+    public void SubscribePickup(Action listener)
+    {
+        OnPickup += listener;
+    }
+
+    public void UnSubscribePickup(Action listener)
+    {
+        OnPickup -= listener;
+    }
+
+
+    public void RaisePickupEvent()
+    {
+        OnPickup?.Invoke();
+    }
+    #endregion
+
+
+
+    #region 아이템상호작용
+    public void SubscribeInteract(Action listener)
+    {
+        OnInteract += listener;
+    }
+
+    public void UnSubscribeInteract(Action listener)
+    {
+        OnInteract -= listener;
+    }
+
+
+    public void RaiseInteractEvent()
+    {
+        OnInteract?.Invoke();
+    }
+    #endregion
+
+
+    #region 아이템키변경 
+    public void SubscribeChangeItem(Action<Vector2> listener)
+    {
+        OnChangeItem += listener;
+    }
+
+    public void UnSubscribeChangeItem(Action<Vector2> listener)
+    {
+        OnChangeItem -= listener;
+    }
+
+
+    public void RaiseChangeItemEvent(Vector2 input)
+    {
+        OnChangeItem?.Invoke(input);
+    }
+    #endregion
 }
