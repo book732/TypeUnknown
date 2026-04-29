@@ -1,5 +1,8 @@
+using NUnit.Framework.Interfaces;
 using System;
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
 {
@@ -10,21 +13,55 @@ public class Player : MonoBehaviour
     private bool isNearItem = false;
     private Inventory inventory;
     [SerializeField] private InputEventSO inputEventSO;
-    public event Action<ItemData> OnInventoryChanged;
+    private GameObject ActiveItem;
+    [SerializeField] private InventoryUI inventoryUI;
+    [SerializeField] Transform HandTransform;
+
 
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         inventory = new Inventory();
+        inventoryUI.InitInventory(inventory);
+        inventory.OnActiveInventorySlotchanged += GenerateAndInitializeActiveItem;
 
     }
+
 
     private void OnEnable()
     {
         inputEventSO.SubscribeMove(SetMove);
         inputEventSO.SubscribePickup(Detectitem);
         inputEventSO.SubscribeInteract(InteractItem);
+
+    }
+
+    private void GenerateAndInitializeActiveItem(int activeslotIndex)
+    {
+
+
+
+        //이전에생성한 아이템이있으면 destroy  하는 코드  같으면 그대로빠져나가고 
+        if (ActiveItem != null)
+        {
+            Destroy(ActiveItem);
+        }
+        //인덱스번호에해당하는아이템data로 아이템생성및 이전아이템있으면 없애는코드 
+
+        if (inventory.items == null) return;
+
+        if (inventory.items[activeslotIndex] == null) return;
+
+
+        var item = inventory.items[activeslotIndex].ItemData.ItemPrefab;
+        if (item == null) return;
+
+
+        ActiveItem = Instantiate(item, HandTransform.position, Quaternion.identity);
+        ActiveItem.transform.SetParent(HandTransform);
+
+
 
     }
 
@@ -50,8 +87,10 @@ public class Player : MonoBehaviour
         {
             ItemData itemData = Existitem();
             inventory.AddItem(new ItemInstance(itemData));
+
             Debug.Log("Picked up: " + itemData.ItemName);
-            OnInventoryChanged?.Invoke(itemData);
+
+
 
         }
 
@@ -107,6 +146,7 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
+
         Movement();
     }
 }

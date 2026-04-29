@@ -10,8 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d62aec77fb1005d4b922e2700086a809, type: 3}
-  m_Name: Potion
+  m_Name: testkey
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: Potion
-  itemIcon: {fileID: 21300000, guid: 0edcb30428af9c34b9114c75ee984bf2, type: 3}
-  isConsumable: 1
+  itemName: Key
+  itemIcon: {fileID: 21300000, guid: 68fba0368e8dc8842ad10756647eee14, type: 3}
+  itemAction: {fileID: 0}
+  itemPrefab: {fileID: 9198561291949474127, guid: ed38e6c54ddae2f4ba9cb00fd2577c90, type: 3}
+  isConsumable: 0

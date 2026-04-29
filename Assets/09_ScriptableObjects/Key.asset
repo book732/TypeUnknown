@@ -14,4 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Key
   itemIcon: {fileID: 21300000, guid: 68fba0368e8dc8842ad10756647eee14, type: 3}
+  itemAction: {fileID: 0}
+  itemPrefab: {fileID: 2064671868335287355, guid: 0f04318d0b3d8a44394db5faf197e288, type: 3}
   isConsumable: 0

@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -14,8 +15,10 @@ public class Slot
     public Image itemIcon;
     public Text itemCount;
     public bool isExpanded = false;
+    public ItemData ItemData;
 }
 
+//TODO
 
 
 
@@ -28,16 +31,28 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private InputEventSO inputEventSO;
     private bool isfull;
     private Vector3 BasicSlotSize;
-    private GameObject HoldingItem;
+    private Inventory inventory;
+
+    public void InitInventory(Inventory playerinventory)
+    {
+        this.inventory = playerinventory;
+        inventory.OnItemAdded += UpdateInventoryUI;
+        inventory.OnActiveInventorySlotchanged += ResizeSlot;
+    }
+
 
     private void Awake()
     {
-        player.OnInventoryChanged += UpdateInventoryUI;
+
         InitItemSlots();
         currentSlot = null;
         BasicSlotSize = inventorySlots[0].itemIcon.transform.localScale;
 
+
+
     }
+
+
     private void OnEnable()
     {
         inputEventSO.SubscribeChangeItem(SlotChanged);
@@ -48,21 +63,31 @@ public class InventoryUI : MonoBehaviour
     }
     private void SlotChanged(Vector2 input)
     {
-
+        int count = inventory.items.Length;
         if (input.y > 0)
         {
-            currentindex = (currentindex + 1) % 4;
+
+            currentindex = (currentindex + 1) % count;
             currentSlot = inventorySlots[currentindex];
-            ResizeSlot();
+            // Debug.Log(currentindex);
+            inventory.SetActiveInventorySlot(currentindex);
+
+
+
+
         }
         else if (input.y < 0)
         {
-            currentindex = ((currentindex - 1) + 4) % 4;
+            currentindex = ((currentindex - 1) + 4) % count;
             currentSlot = inventorySlots[currentindex];
-            ResizeSlot();
+
+            //s Debug.Log(currentindex);
+            inventory.SetActiveInventorySlot(currentindex);
         }
 
     }
+
+
 
     private void InitItemSlots()
     {
@@ -89,20 +114,20 @@ public class InventoryUI : MonoBehaviour
                 currentSlot = slot;
                 currentindex = i;
 
-                ResizeSlot();
+
 
                 break;
             }
             else if (slot.itemIcon.sprite == data.ItemIcon)
             {
-                float value = float.Parse(slot.itemCount.text);
-                value++;
-                slot.itemCount.text = value.ToString();
+                var value = inventory.items[i].ItemCount.ToString();
+                slot.itemCount.text = value;
 
                 //아이템먹었을때그아이템 ui활성화 
                 currentSlot = slot;
                 currentindex = i;
-                ResizeSlot();
+
+
                 break;
             }
 
@@ -115,26 +140,23 @@ public class InventoryUI : MonoBehaviour
 
 
     }
-    public void ActiveSlotChanged(ItemData data)
+
+
+    public void ResizeSlot(int index)
     {
 
-    }
-    public void ResizeSlot()
-    {
+
+        currentindex = index;
+        currentSlot = inventorySlots[index];
+
         foreach (var slot in inventorySlots)
         {
             slot.itemIcon.transform.localScale = BasicSlotSize;
             slot.isExpanded = false;
         }
 
-
-        if (currentSlot != null && currentSlot.isExpanded != true)
-        {
-            currentSlot.itemIcon.transform.localScale = currentSlot.itemIcon.transform.localScale * 1.5f;
-            currentSlot.isExpanded = true;
-            return;
-        }
-
+        currentSlot.itemIcon.transform.localScale *= 1.5f;
+        currentSlot.isExpanded = true;
 
 
     }
