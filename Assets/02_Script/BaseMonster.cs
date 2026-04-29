@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -13,8 +14,7 @@ public class BaseMonster : MonoBehaviour
     [SerializeField] protected float _attackDist = 0;
     
     protected WaitForSeconds _ws;
-    protected WaitForSeconds _WalkTime;
-    protected WaitForSeconds _stopTime;
+
     
     protected MonsterState _monsterState;
     protected Animator _animator;
@@ -40,9 +40,8 @@ public class BaseMonster : MonoBehaviour
         }
         else 
         {
-             Debug.LogError("No player found");
+            Debug.LogError("No player found");
         }
-        
         _animator = GetComponent<Animator>();
         _navMeshAgent  = GetComponent<NavMeshAgent>();
         _ws = new WaitForSeconds(0.016f);
