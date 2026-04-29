@@ -14,8 +14,7 @@ public class BaseMonster : MonoBehaviour
     [SerializeField] protected float _attackDist = 0;
     
     protected WaitForSeconds _ws;
-    protected WaitForSeconds _WalkTime;
-    protected WaitForSeconds _stopTime;
+
     
     protected MonsterState _monsterState;
     protected Animator _animator;
