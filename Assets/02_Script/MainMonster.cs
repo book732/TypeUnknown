@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
@@ -22,6 +23,14 @@ public class MainMonster : BaseMonster
         _walkSpeed = 6f;
         _traceDist = 55f;
         _attackDist = 2f;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            //TODO:플레이어 데미지 처리
+        }
     }
 
     private IEnumerator MonsterState()
