@@ -25,7 +25,7 @@ public class KeyMonster : BaseMonster
         _runSpeed = 2f;
         _walkSpeed = 1f;
         _damage = 20f;
-        _traceDist = 10f;
+        _traceDist = 20f;
         _attackDist = 2f;
         _posX = Random.Range(-5f, 5f);
         _posY = Random.Range(-5f, 5f);
@@ -57,24 +57,22 @@ public class KeyMonster : BaseMonster
 
                     if (_timer >= _idleWaitTime)
                     {
-                        SetMonsterDestination();
+                        _navMeshAgent.SetDestination(SetMonsterDestination()); // 몬스터의 목적지 갱신 로직
                         _monsterState = MonsterState.WALKING;
-                        Debug.Log("_monsterState is walking");
                         _timer = 0f;
                     }
                     break;
                 case MonsterState.WALKING:
-                    _animator.SetBool(hashIsWalking, true);
                     _animator.SetBool(hashIsRun, false);
                     _animator.SetBool(hashIsAttack, false);
+                    _animator.SetBool(hashIsWalking, true);
                     _navMeshAgent.isStopped = false;
                     
                     float dist = (_monsterWalkPos - this.transform.position).sqrMagnitude;
-                    
-                    if (_navMeshAgent.remainingDistance <= walkstopDistance)
+                    //_navMeshAgent.remainingDistance 네브메시 남은거리 
+                    if (dist <= walkstopDistance)  // 기본 idle 상태의 이동목표 지점 체크
                     {
                         _monsterState = MonsterState.IDLE;
-                        Debug.Log("_monsterState is idle");
                     }
                     break;
                 case MonsterState.TRACERUN:
@@ -91,8 +89,6 @@ public class KeyMonster : BaseMonster
                     _animator.SetBool(hashIsAttack, true);
                     _navMeshAgent.ResetPath();
                     _navMeshAgent.isStopped = true;
-                //TODO: 잡기모션 추가 
-                //TODO: 
                     break;
             }
             yield return _ws;
@@ -122,17 +118,15 @@ public class KeyMonster : BaseMonster
 
         yield return null;
     }
-
-
-
-    private void SetMonsterDestination()
+    
+    private Vector3 SetMonsterDestination()
     {
         _posX = Random.Range(-10f, 10f);
         _posY = Random.Range(-10f, 10f);
         _monsterMove = new Vector3(_posX,0f,_posY);
         _monsterWalkPos =  this.transform.position + _monsterMove;
-        _navMeshAgent.SetDestination(_monsterWalkPos);
         _navMeshAgent.speed = _walkSpeed;
+        return  _monsterWalkPos;
     }
 
 
