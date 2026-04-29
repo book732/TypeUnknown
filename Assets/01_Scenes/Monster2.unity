@@ -127,6 +127,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 590935179892349603, guid: 9b90bc5e730ceef42b9d4c865fb40050, type: 3}
+      propertyPath: StartPoint
+      value: 
+      objectReference: {fileID: 1710418348}
+    - target: {fileID: 590935179892349603, guid: 9b90bc5e730ceef42b9d4c865fb40050, type: 3}
+      propertyPath: _playerTransform
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2978861661846278773, guid: 9b90bc5e730ceef42b9d4c865fb40050, type: 3}
       propertyPath: m_Name
       value: IDOL 2Prefab 5
@@ -174,25 +182,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2978861661846278773, guid: 9b90bc5e730ceef42b9d4c865fb40050, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1126596549}
-    - targetCorrespondingSourceObject: {fileID: 2978861661846278773, guid: 9b90bc5e730ceef42b9d4c865fb40050, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1126596548}
-    - targetCorrespondingSourceObject: {fileID: 2978861661846278773, guid: 9b90bc5e730ceef42b9d4c865fb40050, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1126596547}
-    - targetCorrespondingSourceObject: {fileID: 2978861661846278773, guid: 9b90bc5e730ceef42b9d4c865fb40050, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1126596546}
-    - targetCorrespondingSourceObject: {fileID: 2978861661846278773, guid: 9b90bc5e730ceef42b9d4c865fb40050, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1126596545}
-    - targetCorrespondingSourceObject: {fileID: -4654875306786653828, guid: 9b90bc5e730ceef42b9d4c865fb40050, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1055813043}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9b90bc5e730ceef42b9d4c865fb40050, type: 3}
 --- !u!1 &961415558
 GameObject:
@@ -258,152 +248,6 @@ MonoBehaviour:
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: 43a8ea41c4d0e2b4e9899e792562092a, type: 2}
   m_BuildHeightMesh: 0
---- !u!1 &1055813041 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: -4654875306786653828, guid: 9b90bc5e730ceef42b9d4c865fb40050, type: 3}
-  m_PrefabInstance: {fileID: 315003439}
-  m_PrefabAsset: {fileID: 0}
---- !u!136 &1055813043
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1055813041}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.22
-  m_Height: 0
-  m_Direction: 1
-  m_Center: {x: -0.04, y: 0, z: 0.01}
---- !u!1 &1126596543 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2978861661846278773, guid: 9b90bc5e730ceef42b9d4c865fb40050, type: 3}
-  m_PrefabInstance: {fileID: 315003439}
-  m_PrefabAsset: {fileID: 0}
---- !u!195 &1126596545
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1126596543}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 2
-  m_BaseOffset: 0
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
---- !u!54 &1126596546
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1126596543}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
---- !u!136 &1126596547
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1126596543}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.3
-  m_Height: 1.7
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.85, z: 0}
---- !u!114 &1126596548
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1126596543}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c05c6cbf760342d43ad9a8979592208c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MainMonster
-  _damage: 0
-  _walkSpeed: 0
-  _runSpeed: 0
-  _playerTransform: {fileID: 0}
-  _traceDist: 0
-  _attackDist: 0
-  StartPoint: {fileID: 1710418348}
---- !u!95 &1126596549
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1126596543}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: 8cc47016f547a024692210de2e4869cf, type: 3}
-  m_Controller: {fileID: 9100000, guid: 143a71e52e893de4b9c46bf92300ea0b, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1198207865
 GameObject:
   m_ObjectHideFlags: 0
