@@ -93,7 +93,7 @@ public class MainMonster : BaseMonster
             yield return _ws;
         }
     }
-    
+
     private void ChangedSFX(AudioClip clip)
     {
         if (_mainMonsterSFX.clip != clip)
