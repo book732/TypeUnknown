@@ -1,24 +1,43 @@
-using NUnit.Framework.Interfaces;
-using System;
-using System.Runtime.CompilerServices;
-using Unity.Mathematics;
+using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.Splines.Interpolators;
+
 
 public class Player : MonoBehaviour
 {
-    private float speed = 5.0f;
+
+    [SerializeField] private float _stamina; // mp 역할
+    [SerializeField] private float mental; // hp 역할
+
+    private float speed; 
+   
+    
+    //inventory settings
     private Rigidbody rb;
     private float horizontalInput;
     private float verticalInput;
     private bool isNearItem = false;
     private Inventory inventory;
-    [SerializeField] private InputEventSO inputEventSO;
     private GameObject ActiveItem;
+    [SerializeField] private InputEventSO inputEventSO;
     [SerializeField] private InventoryUI inventoryUI;
     [SerializeField] Transform HandTransform;
-
-
+    
+    
+    //monster tag 
+    private string _monsterHandTag;
+    
+    //monster timer
+    private float _timer = 0f;
+    private float _timer2 = 0f;
+    //escape settings
+    private int _escapeClickCount;
+    private int _requiredEscapeClicks;
+    [SerializeField] private bool _isPlayerStop = false;
+    [SerializeField] private CinemachineFollow _camera;
+    [SerializeField] private GameObject _cameraPos;
+    float timeElapsed = 0f;
+    private Vector3 _baseCamera;
 
     void Awake()
     {
@@ -26,23 +45,107 @@ public class Player : MonoBehaviour
         inventory = new Inventory();
         inventoryUI.InitInventory(inventory);
         inventory.OnActiveInventorySlotchanged += GenerateAndInitializeActiveItem;
-
+        _monsterHandTag = "MonsterHand";
+        init();
     }
 
+    private void init()
+    {
+        _stamina = 100f;
+        mental = 100f;
+        speed = 5f;
+        _timer2 = 0f;
+        _isPlayerStop = false;
+        _escapeClickCount = 0;
+        _requiredEscapeClicks = 10;
+        _camera = GetComponentInChildren<CinemachineFollow>();
+        _baseCamera = _cameraPos.transform.localPosition;
+    }
 
     private void OnEnable()
     {
         inputEventSO.SubscribeMove(SetMove);
         inputEventSO.SubscribePickup(Detectitem);
         inputEventSO.SubscribeInteract(InteractItem);
+        inputEventSO.SubscribeEscape(TryEscape);
+    }
+    
+    private void OnDisable()
+    {
+        inputEventSO.UnSubscribeMove(SetMove);
+        inputEventSO.UnSubscribePickup(Detectitem);
+        inputEventSO.UnSubscribeInteract(InteractItem);
+        inputEventSO.UnSubscribeEscape(TryEscape);
+    }
+    
+    private void FixedUpdate()
+    {
+        _timer2 += Time.fixedDeltaTime;
+        if (_isPlayerStop)
+        {
+            _timer += Time.fixedDeltaTime;
+            //player는 움직일수 없는상태.
+            PlayerView();
+            if (_timer > 1f)
+            {
+                PlayerTakeDamage();
+                _timer = 0f;
+            }
+            return;
+        }
+        Movement();
+    }
+    
+    private void Movement()
+    {
+        Vector3 movement = new Vector3(horizontalInput, 0, verticalInput) * speed * Time.deltaTime;
+        rb.MovePosition(transform.position + movement);
+    }
+    
+    
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag(_monsterHandTag) == true)
+        {
+            _isPlayerStop = true;
+        }
+    }
+    private void PlayerTakeDamage()
+    {
+        mental -= 5f;
+    }
+    
+    
+    private void TryEscape()
+    {
+        // 잡혀있는 상태가 아니면 무시
+        if (!_isPlayerStop) return;
+
+        _escapeClickCount++;
+        Debug.Log($"탈출 시도 중! ({_escapeClickCount} / {_requiredEscapeClicks})");
+
+        // 요구 횟수를 채우면 탈출 성공
+        if (_escapeClickCount >= _requiredEscapeClicks)
+        {
+            Debug.Log("탈출 성공!");
+            _camera.FollowOffset = _baseCamera;
+            _isPlayerStop = false;
+            _escapeClickCount = 0; // 카운트 초기화
+            _timer = 0f;           // 데미지 타이머 초기화
+        }
 
     }
 
+    private void PlayerView()
+    {
+        float t = timeElapsed / 0.5f;
+        _camera.FollowOffset = Vector3.Lerp(_baseCamera, new Vector3(0f,0.88f,0.21f),t);
+        timeElapsed += Time.deltaTime;
+    }
+    
+    
     private void GenerateAndInitializeActiveItem(int activeslotIndex)
     {
-
-
-
         //이전에생성한 아이템이있으면 destroy  하는 코드  같으면 그대로빠져나가고 
         if (ActiveItem != null)
         {
@@ -68,9 +171,6 @@ public class Player : MonoBehaviour
             collider.enabled = false;
         }
         ActiveItem.transform.SetParent(HandTransform);
-
-
-
     }
 
 
@@ -80,28 +180,17 @@ public class Player : MonoBehaviour
         Debug.Log("Interacted with item");
     }
 
-    private void OnDisable()
-    {
-        inputEventSO.UnSubscribeMove(SetMove);
-        inputEventSO.UnSubscribePickup(Detectitem);
-        inputEventSO.UnSubscribeInteract(InteractItem);
 
-    }
 
     private void Detectitem()
     {
-
         if (Existitem() != null)
         {
             ItemData itemData = Existitem();
             inventory.AddItem(new ItemInstance(itemData));
 
             Debug.Log("Picked up: " + itemData.ItemName);
-
-
-
         }
-
     }
 
     private void SetMove(Vector2 input)
@@ -112,14 +201,7 @@ public class Player : MonoBehaviour
         //   Debug.Log("Move Event Received: " + input);
 
     }
-
-
-    private void Movement()
-    {
-        Vector3 movement = new Vector3(horizontalInput, 0, verticalInput) * speed * Time.deltaTime;
-        rb.MovePosition(transform.position + movement);
-    }
-
+    
     private ItemData Existitem()
     {
         RaycastHit hit;
@@ -154,6 +236,7 @@ public class Player : MonoBehaviour
 
 
     }
+    
     void OnDrawGizmos()
     {
         Vector3 center = transform.position;
@@ -178,19 +261,4 @@ public class Player : MonoBehaviour
         Gizmos.DrawLine(center, endCenter);
     }
 
-
-
-    private void FixedUpdate()
-    {
-
-        Movement();
-    }
 }
-
-
-
-
-
-
-
-

@@ -23,7 +23,7 @@ RenderSettings:
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
-  m_AmbientIntensity: 1
+  m_AmbientIntensity: 0
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
@@ -1519,7 +1519,7 @@ Transform:
   m_GameObject: {fileID: 1828318377}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.84, z: -5.23}
+  m_LocalPosition: {x: 575.07, y: 18.05, z: 490.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1618,7 +1618,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &1905479297
 Light:
   m_ObjectHideFlags: 0
@@ -1629,7 +1629,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 13
   m_Type: 1
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
+  m_Color: {r: 0.5188679, g: 0.5188679, b: 0.5188679, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -2184,15 +2184,15 @@ PrefabInstance:
       objectReference: {fileID: 1811608249}
     - target: {fileID: 4955475071061056570, guid: de0a7bbaacc84ca41a7a0a14de93e19c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 575.07
       objectReference: {fileID: 0}
     - target: {fileID: 4955475071061056570, guid: de0a7bbaacc84ca41a7a0a14de93e19c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.84
+      value: 18.05
       objectReference: {fileID: 0}
     - target: {fileID: 4955475071061056570, guid: de0a7bbaacc84ca41a7a0a14de93e19c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -5.23
+      value: 490.9
       objectReference: {fileID: 0}
     - target: {fileID: 4955475071061056570, guid: de0a7bbaacc84ca41a7a0a14de93e19c, type: 3}
       propertyPath: m_LocalRotation.w

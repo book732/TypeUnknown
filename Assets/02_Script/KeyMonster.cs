@@ -15,13 +15,20 @@ public class KeyMonster : BaseMonster
     private float _posY;
     [SerializeField] private float walkstopDistance;
 
-    private float _timer;
+    private float _waitTimer;
     private float _idleWaitTime;
+
+    private Collider _monsterHandCollider;
+    
     protected override void Init()
     {
         base.Init();
-        _timer = 0f;
+        
+        //timer
+        _waitTimer = 0f;
         _idleWaitTime = 5f;
+        //
+        
         _runSpeed = 2f;
         _walkSpeed = 1f;
         _damage = 20f;
@@ -34,6 +41,7 @@ public class KeyMonster : BaseMonster
         walkstopDistance = 3f * 3f;
         _navMeshAgent.stoppingDistance = 0.5f;
 
+        _monsterHandCollider = GetComponentInChildren<Collider>();
         ChangeState(MonsterState.IDLE);
         StartCoroutine(MonsterSetStateCo());
     }
@@ -47,12 +55,12 @@ public class KeyMonster : BaseMonster
             switch (_monsterState)
             {
                 case MonsterState.IDLE:
-                    _timer += 0.1f;
-                    if (_timer >= _idleWaitTime)
+                    _waitTimer += 0.016f;
+                    if (_waitTimer >= _idleWaitTime)
                     {
                         _navMeshAgent.SetDestination(SetMonsterDestination()); // 몬스터의 목적지 갱신 로직
                         ChangeState(MonsterState.WALKING);
-                        _timer = 0f;
+                        _waitTimer = 0f;
                     }
                     break;
                 case MonsterState.WALKING:
@@ -77,9 +85,9 @@ public class KeyMonster : BaseMonster
     private void CheckMonsterState()
     {
             float dist = (_playerTransform.position - this.transform.position).sqrMagnitude;
-            if (dist < _attackDist * _attackDist)
+            if (dist < _attackDist * _attackDist )
             {
-                ChangeState(MonsterState.ATTACK);
+                    ChangeState(MonsterState.ATTACK);
             }
             else if (dist < _traceDist * _traceDist)
             {
@@ -138,4 +146,5 @@ public class KeyMonster : BaseMonster
         _monsterWalkPos =  this.transform.position + _monsterMove;
         return  _monsterWalkPos;
     }
+    
 }

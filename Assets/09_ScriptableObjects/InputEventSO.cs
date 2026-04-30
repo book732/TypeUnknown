@@ -11,7 +11,29 @@ public class InputEventSO : ScriptableObject
     public Action OnPickup;
     public Action OnInteract;
     public Action<Vector2> OnChangeItem;
+    public Action OnEscape;
 
+
+    #region ≈ª√‚
+    public void SubscribeEscape(Action listener)
+    {
+        OnEscape += listener;
+    }
+
+    public void UnSubscribeEscape(Action listener)
+    {
+        OnEscape -= listener;
+    }
+
+    public void RaiseEscapeEvent()
+    {
+        OnEscape?.Invoke();
+        //  Debug.Log("Move Event Raised: " + input);
+    }
+
+    #endregion
+    
+    
     #region ¿Ãµø
     public void SubscribeMove(Action<Vector2> listener)
     {
