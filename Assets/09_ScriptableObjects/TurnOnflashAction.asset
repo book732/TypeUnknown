@@ -9,8 +9,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a0ee4e2a9a85e848957be601157741a, type: 3}
-  m_Name: Attack
-  m_EditorClassIdentifier: Assembly-CSharp::ItemAction
-  actionName: 
-  actionKey: 
+  m_Script: {fileID: 11500000, guid: df9bc669cebaa6349b1810fc21f4d55b, type: 3}
+  m_Name: TurnOnflashAction
+  m_EditorClassIdentifier: Assembly-CSharp::TurnOnflashAction
