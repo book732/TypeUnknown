@@ -1514,8 +1514,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "\uC774\uB3D9 :  WASD\n\uB2EC\uB9AC\uAE30 : SHIFT\n\uC549\uAE30 : C\n\uC810\uD504
-    : SPACE\n\uC544\uC774\uD15C \uBCC0\uACBD : \uB9C8\uC6B0\uC2A4 \uD720\n\uC0C1\uD638\uC791\uC6A9
-    : E"
+    : SPACE\n\uC544\uC774\uD15C \uC2B5\uB4DD : E\n\uC544\uC774\uD15C \uBCC0\uACBD
+    : \uB9C8\uC6B0\uC2A4 \uD720\n\uC0C1\uD638\uC791\uC6A9 : \uB9C8\uC6B0\uC2A4 \uC88C\uD074\uB9AD\n\uD0C8\uCD9C
+    : A,D"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a69933e70e541ff4abe0f0f0bae5bb7d, type: 2}
   m_sharedMaterial: {fileID: -2841696183521315581, guid: a69933e70e541ff4abe0f0f0bae5bb7d, type: 2}
