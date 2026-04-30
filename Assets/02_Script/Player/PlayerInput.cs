@@ -13,21 +13,6 @@ public class PlayerInput : MonoBehaviour
         inputActions.Player.Enable();
     }
 
-    private void OnEnable()
-    {
-        //키바인딩        
-        BindAction(inputActions.Player.Move, OnMove);
-        BindAction(inputActions.Player.Pick, GetItem);
-
-        //Interect item 이 TODO 입력 이상하게들어오는데 이거수정할것 
-        BindAction(inputActions.Player.Interact, InteractItem);
-        BindAction(inputActions.Player.Jump, Jump);
-        BindAction(inputActions.Player.Look, Look);
-        BindAction(inputActions.Player.Sprint, Sprint);
-        BindAction(inputActions.Player.Crouch, Crouch);
-        BindAction(inputActions.Player.ItemChange, ItemChange);
-    }
-
     private void ItemChange(InputAction.CallbackContext context)
     {
         inputEventSO.RaiseChangeItemEvent(context.ReadValue<Vector2>());
@@ -40,7 +25,14 @@ public class PlayerInput : MonoBehaviour
 
     private void Sprint(InputAction.CallbackContext context)
     {
-
+        if (context.performed)
+        {
+            inputEventSO.RaiseSprintEvent(true);
+        }
+        else if (context.canceled)
+        {
+            inputEventSO.RaiseSprintEvent(false);
+        }
     }
 
     private void Look(InputAction.CallbackContext context)
@@ -51,6 +43,11 @@ public class PlayerInput : MonoBehaviour
     private void Jump(InputAction.CallbackContext context)
     {
 
+    }
+    
+    private void Escape(InputAction.CallbackContext context)
+    {
+        inputEventSO.RaiseEscapeEvent();
     }
 
     void BindAction(InputAction action, Action<InputAction.CallbackContext> callback)
@@ -90,14 +87,27 @@ public class PlayerInput : MonoBehaviour
     {
 
     }
-
+    private void OnEnable()
+    {
+        //키바인딩        
+        BindAction(inputActions.Player.Move, OnMove);
+        BindAction(inputActions.Player.Pick, GetItem);
+        BindAction(inputActions.Player.Interact, InteractItem);
+        BindAction(inputActions.Player.Jump, Jump);
+        BindAction(inputActions.Player.Look, Look);
+        BindAction(inputActions.Player.Sprint, Sprint);
+        BindAction(inputActions.Player.Crouch, Crouch);
+        BindAction(inputActions.Player.ItemChange, ItemChange);
+        BindAction(inputActions.Player.Escape, Escape);
+    }
     private void OnDisable()
     {
         UnBindAction(inputActions.Player.Move, OnMove);
         UnBindAction(inputActions.Player.Pick, GetItem);
         UnBindAction(inputActions.Player.Interact, InteractItem);
         UnBindAction(inputActions.Player.ItemChange, ItemChange);
-
+        UnBindAction(inputActions.Player.Escape, Escape);
+        UnBindAction(inputActions.Player.Sprint, Sprint);
 
         inputActions.Player.Disable();
     }

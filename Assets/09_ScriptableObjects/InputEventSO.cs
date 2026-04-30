@@ -11,7 +11,30 @@ public class InputEventSO : ScriptableObject
     public Action OnPickup;
     public Action OnInteract;
     public Action<Vector2> OnChangeItem;
+    public Action OnEscape;
+    public Action<bool> OnSprint;
 
+
+    #region 탈출
+    public void SubscribeEscape(Action listener)
+    {
+        OnEscape += listener;
+    }
+
+    public void UnSubscribeEscape(Action listener)
+    {
+        OnEscape -= listener;
+    }
+
+    public void RaiseEscapeEvent()
+    {
+        OnEscape?.Invoke();
+        //  Debug.Log("Move Event Raised: " + input);
+    }
+
+    #endregion
+    
+    
     #region 이동
     public void SubscribeMove(Action<Vector2> listener)
     {
@@ -86,5 +109,23 @@ public class InputEventSO : ScriptableObject
     {
         OnChangeItem?.Invoke(input);
     }
+    #endregion
+
+    #region 스프린트
+
+    public void SubscribeSprint(Action<bool> listener)
+    {
+        OnSprint += listener;
+    }
+
+    public void UnSubscribeSprint(Action<bool> listener)
+    {
+        OnSprint -= listener;
+    }
+    public void RaiseSprintEvent(bool _isRun)
+    {
+        OnSprint?.Invoke(_isRun);
+    }
+
     #endregion
 }
