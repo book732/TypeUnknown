@@ -32,18 +32,21 @@ public class Inventory
         if (items[activeIndex] != null && items[activeIndex].ItemData.ItemAction != null)
         {
             items[activeIndex].ItemData.ItemAction.Execute(user);
+
+            if (items[activeIndex].ItemData.IsConsumable == true)
+            {
+                //TODO
+                //아이템없애기 
+            }
         }
 
-        if (items[activeIndex].ItemData.IsConsumable == true)
-        {
-            //TODO
-            //아이템없애기 
-        }
+
         else
         {
 
-        }
 
+
+        }
     }
 
 
