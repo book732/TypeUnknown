@@ -18,7 +18,7 @@ public class Slot
     public ItemData ItemData;
 }
 
-//TODO
+
 
 
 
@@ -27,7 +27,6 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private List<Slot> inventorySlots;
     [SerializeField] private Player player;
     private Slot currentSlot;
-    private int currentindex;
     [SerializeField] private InputEventSO inputEventSO;
     private bool isfull;
     private Vector3 BasicSlotSize;
@@ -36,7 +35,7 @@ public class InventoryUI : MonoBehaviour
     public void InitInventory(Inventory playerinventory)
     {
         this.inventory = playerinventory;
-        inventory.OnItemAdded += UpdateInventoryUI;
+        inventory.OnslotChanged += UpdateInventoryUI;
         inventory.OnActiveInventorySlotchanged += ResizeSlot;
     }
 
@@ -66,11 +65,12 @@ public class InventoryUI : MonoBehaviour
         int count = inventory.items.Length;
         if (input.y > 0)
         {
+            int candidateIndex = inventory.ActiveIndex;
 
-            currentindex = (currentindex + 1) % count;
-            currentSlot = inventorySlots[currentindex];
+            candidateIndex = (candidateIndex + 1) % count;
+            currentSlot = inventorySlots[candidateIndex];
             // Debug.Log(currentindex);
-            inventory.SetActiveInventorySlot(currentindex);
+            inventory.SetActiveInventorySlot(candidateIndex);
 
 
 
@@ -78,11 +78,13 @@ public class InventoryUI : MonoBehaviour
         }
         else if (input.y < 0)
         {
-            currentindex = ((currentindex - 1) + 4) % count;
-            currentSlot = inventorySlots[currentindex];
+            int candidateIndex = inventory.ActiveIndex;
+
+            candidateIndex = ((candidateIndex - 1) + count) % count;
+            currentSlot = inventorySlots[candidateIndex];
 
             //s Debug.Log(currentindex);
-            inventory.SetActiveInventorySlot(currentindex);
+            inventory.SetActiveInventorySlot(candidateIndex);
         }
 
     }
@@ -100,54 +102,33 @@ public class InventoryUI : MonoBehaviour
 
     }
 
-    private void UpdateInventoryUI(ItemData data)
+    //해결완료
+    //이부분문제  UI가지금  데이터를바꾸고잇음이게아니라 Inventory꺼를바꾸고그걸반영해야됨 
+    //게다가지금 slot.itemIcon.sprite == data.ItemIcon 이것도이상함 식별은 INVENTORY 에서해야됨
+    //게다가 CURRENT SLOT이랑 CURRENT INDEX 가지는것도이상함 
+
+    private void UpdateInventoryUI(int index, ItemInstance itemInstance)
     {
-        for (int i = 0; i < inventorySlots.Count; i++)
+        var slot = inventorySlots[index];
+
+        if (itemInstance == null)
         {
-            var slot = inventorySlots[i];
-            if (slot.itemIcon.sprite == null)
-            {
-                slot.itemIcon.sprite = data.ItemIcon;
-                slot.itemCount.text = "1";
-
-                //아이템먹었을때그아이템 ui활성화 
-                currentSlot = slot;
-                currentindex = i;
-
-
-
-                break;
-            }
-            else if (slot.itemIcon.sprite == data.ItemIcon)
-            {
-                var value = inventory.items[i].ItemCount.ToString();
-                slot.itemCount.text = value;
-
-                //아이템먹었을때그아이템 ui활성화 
-                currentSlot = slot;
-                currentindex = i;
-
-
-                break;
-            }
-
-
-
-
+            slot.itemIcon.sprite = null;
+            slot.itemCount.text = "0";
+            return;
         }
 
+        slot.itemIcon.sprite = itemInstance.ItemData.ItemIcon;
+        slot.itemCount.text = itemInstance.ItemCount.ToString();
 
-
-
+        currentSlot = inventorySlots[index];
     }
-
 
     public void ResizeSlot(int index)
     {
 
 
-        currentindex = index;
-        currentSlot = inventorySlots[index];
+
 
         foreach (var slot in inventorySlots)
         {
@@ -155,6 +136,7 @@ public class InventoryUI : MonoBehaviour
             slot.isExpanded = false;
         }
 
+        var currentSlot = inventorySlots[index];
         currentSlot.itemIcon.transform.localScale *= 1.5f;
         currentSlot.isExpanded = true;
 
