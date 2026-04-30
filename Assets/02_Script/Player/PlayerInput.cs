@@ -25,7 +25,14 @@ public class PlayerInput : MonoBehaviour
 
     private void Sprint(InputAction.CallbackContext context)
     {
-
+        if (context.performed)
+        {
+            inputEventSO.RaiseSprintEvent(true);
+        }
+        else if (context.canceled)
+        {
+            inputEventSO.RaiseSprintEvent(false);
+        }
     }
 
     private void Look(InputAction.CallbackContext context)
@@ -100,6 +107,7 @@ public class PlayerInput : MonoBehaviour
         UnBindAction(inputActions.Player.Interact, InteractItem);
         UnBindAction(inputActions.Player.ItemChange, ItemChange);
         UnBindAction(inputActions.Player.Escape, Escape);
+        UnBindAction(inputActions.Player.Sprint, Sprint);
 
         inputActions.Player.Disable();
     }

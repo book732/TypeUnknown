@@ -31,7 +31,7 @@ public class MainMonster : BaseMonster
     {
         if (other.CompareTag("Player"))
         {
-            //TODO:플레이어 데미지 처리
+            other.GetComponent<Player>().PlayerTakeDamage(_damage);
         }
     }
 

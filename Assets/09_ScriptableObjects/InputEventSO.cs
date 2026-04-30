@@ -12,6 +12,7 @@ public class InputEventSO : ScriptableObject
     public Action OnInteract;
     public Action<Vector2> OnChangeItem;
     public Action OnEscape;
+    public Action<bool> OnSprint;
 
 
     #region 탈출
@@ -108,5 +109,23 @@ public class InputEventSO : ScriptableObject
     {
         OnChangeItem?.Invoke(input);
     }
+    #endregion
+
+    #region 스프린트
+
+    public void SubscribeSprint(Action<bool> listener)
+    {
+        OnSprint += listener;
+    }
+
+    public void UnSubscribeSprint(Action<bool> listener)
+    {
+        OnSprint -= listener;
+    }
+    public void RaiseSprintEvent(bool _isRun)
+    {
+        OnSprint?.Invoke(_isRun);
+    }
+
     #endregion
 }

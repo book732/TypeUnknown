@@ -1,4 +1,7 @@
+using System;
+using System.Collections;
 using Unity.Cinemachine;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Splines.Interpolators;
 
@@ -7,10 +10,17 @@ public class Player : MonoBehaviour
 {
 
     [SerializeField] private float _stamina; // mp 역할
-    [SerializeField] private float mental; // hp 역할
-
-    private float speed; 
-   
+    [SerializeField] private float _mental; // hp 역할
+    [SerializeField] private AudioClip _cantSprint;
+    [SerializeField] private AudioClip _walkFootSound;
+    [SerializeField] private AudioClip _runFootSound;
+    private AudioSource _playerAudioSource;
+    
+    private float _speed;
+    private bool _isSprint;
+    private float _usingStamina;
+    private float _recoverStamina;
+    private bool _isCantSprint;
     
     //inventory settings
     private Rigidbody rb;
@@ -51,15 +61,18 @@ public class Player : MonoBehaviour
 
     private void init()
     {
+        _usingStamina = 10f;
         _stamina = 100f;
-        mental = 100f;
-        speed = 5f;
+        _mental = 100f;
+        _recoverStamina = 30f;
+        _speed = 5f;
         _timer2 = 0f;
         _isPlayerStop = false;
         _escapeClickCount = 0;
         _requiredEscapeClicks = 10;
         _camera = GetComponentInChildren<CinemachineFollow>();
         _baseCamera = _cameraPos.transform.localPosition;
+        _playerAudioSource = GetComponent<AudioSource>();
     }
 
     private void OnEnable()
@@ -68,6 +81,8 @@ public class Player : MonoBehaviour
         inputEventSO.SubscribePickup(Detectitem);
         inputEventSO.SubscribeInteract(InteractItem);
         inputEventSO.SubscribeEscape(TryEscape);
+        inputEventSO.SubscribeSprint(Sprint);
+        StartCoroutine(PlayerSprint());
     }
     
     private void OnDisable()
@@ -76,8 +91,10 @@ public class Player : MonoBehaviour
         inputEventSO.UnSubscribePickup(Detectitem);
         inputEventSO.UnSubscribeInteract(InteractItem);
         inputEventSO.UnSubscribeEscape(TryEscape);
+        inputEventSO.UnSubscribeSprint(Sprint);
+        StopCoroutine(PlayerSprint());
     }
-    
+
     private void FixedUpdate()
     {
         _timer2 += Time.fixedDeltaTime;
@@ -88,21 +105,60 @@ public class Player : MonoBehaviour
             PlayerView();
             if (_timer > 1f)
             {
-                PlayerTakeDamage();
+                PlayerTakeDamage(5f);
                 _timer = 0f;
             }
             return;
         }
         Movement();
     }
+
+    private void ChangeSound(AudioClip clip)
+    {
+        if (_playerAudioSource.clip != clip)
+        {
+            _playerAudioSource.clip = clip;
+            _playerAudioSource.Play();
+        }
+    }
+    
+    private IEnumerator PlayerSprint()
+    {
+        while (true)
+        {
+            if (_isSprint && _stamina>0f)
+            {
+                _stamina -= _usingStamina*Time.deltaTime;
+                _stamina = Mathf.Max(_stamina, 0f);
+                _speed = 10f;
+                ChangeSound(_runFootSound);
+
+                if (_stamina <= 0f)
+                {
+                    _speed = 0.5f;
+                    ChangeSound(_cantSprint);
+                    yield return new WaitForSecondsRealtime(3.0f);
+                }
+            }
+            //!_isSprint || _stamina<=0
+            else
+            {
+                _stamina += _recoverStamina*Time.deltaTime;
+                _stamina = Mathf.Min(_stamina, 100f);
+                _speed = 5f;
+                ChangeSound(_walkFootSound);
+            }
+
+            yield return new WaitForSeconds(0.003f);
+        }
+    }
     
     private void Movement()
     {
-        Vector3 movement = new Vector3(horizontalInput, 0, verticalInput) * speed * Time.deltaTime;
+        Vector3 movement = new Vector3(horizontalInput, 0, verticalInput) * _speed * Time.deltaTime;
         rb.MovePosition(transform.position + movement);
     }
-    
-    
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag(_monsterHandTag) == true)
@@ -110,11 +166,10 @@ public class Player : MonoBehaviour
             _isPlayerStop = true;
         }
     }
-    private void PlayerTakeDamage()
+    public void PlayerTakeDamage(float damage)
     {
-        mental -= 5f;
+        _mental -= damage;
     }
-    
     
     private void TryEscape()
     {
@@ -180,7 +235,10 @@ public class Player : MonoBehaviour
         Debug.Log("Interacted with item");
     }
 
-
+    private void Sprint(bool _isRun)
+    {
+        _isSprint =  _isRun;
+    }
 
     private void Detectitem()
     {
