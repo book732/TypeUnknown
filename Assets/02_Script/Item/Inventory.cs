@@ -1,15 +1,19 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 public class Inventory
 {
 
-    private int ActiveInventorySlot;
+
+    private int activeIndex;
+    public int ActiveIndex => activeIndex;
     public event Action<int> OnActiveInventorySlotchanged;
-    public event Action<ItemData> OnItemAdded;
+    public event Action<int, ItemInstance> OnslotChanged;
     private bool isFull;
-    [SerializeField] private int maxInventorySlot = 4;
+    public bool IsFull => isFull;
+    [SerializeField] private int maxInventorySlot = 5;
     public ItemInstance[] items;
 
 
@@ -18,12 +22,37 @@ public class Inventory
     {
         items = new ItemInstance[maxInventorySlot];
     }
+
+    //TODO 지금 아이템먹을시에만 반영되잇음 이벤트구독으로인해 드랍이라던지 사용도 반영해야됨 
+
+    public void UseActiveItem(GameObject user)
+    {
+        //인벤토리의 active index 에해당하는 아이템이 null 이아니고 아이템액션이잇을경우 
+
+        if (items[activeIndex] != null && items[activeIndex].ItemData.ItemAction != null)
+        {
+            items[activeIndex].ItemData.ItemAction.Execute(user);
+
+            if (items[activeIndex].ItemData.IsConsumable == true)
+            {
+                //TODO
+                //아이템없애기 
+            }
+        }
+
+
+        else
+        {
+
+
+
+        }
+    }
+
+
     public void AddItem(ItemInstance itemInstance)
     {
-        if (checkisFull())
-        {
-            return;
-        }
+
 
         for (int i = 0; i < items.Length; i++)
         {
@@ -32,12 +61,15 @@ public class Inventory
             {
                 items[i].ItemCount++;
                 SetActiveInventorySlot(i);
-                OnItemAdded?.Invoke(itemInstance.ItemData);
+                OnslotChanged?.Invoke(i, items[i]);
                 return;
             }
 
         }
-
+        if (checkisFull())
+        {
+            return;
+        }
 
 
         for (int i = 0; i < items.Length; i++)
@@ -47,7 +79,7 @@ public class Inventory
                 items[i] = itemInstance;
 
                 SetActiveInventorySlot(i);
-                OnItemAdded?.Invoke(itemInstance.ItemData);
+                OnslotChanged?.Invoke(i, itemInstance);
                 return;
             }
         }
@@ -60,14 +92,26 @@ public class Inventory
 
     private bool checkisFull()
     {
-        return false;
-        //Todo처리할것
+
+
+        for (int i = 0; i < items.Length; i++)
+        {
+            if (items[i] == null)
+            {
+                return false;
+            }
+
+
+        }
+        return true;
+
+
     }
 
     public void SetActiveInventorySlot(int index)
     {
-        ActiveInventorySlot = index;
-        OnActiveInventorySlotchanged?.Invoke(ActiveInventorySlot);
+        activeIndex = index;
+        OnActiveInventorySlotchanged?.Invoke(activeIndex);
 
     }
 
