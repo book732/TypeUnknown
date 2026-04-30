@@ -51,7 +51,7 @@ public class InGameUIManager : MonoBehaviour
     
     private void OnResumeGameClick()
     {
-        SceneManager.UnloadSceneAsync("UI");
+        SceneManager.UnloadSceneAsync("EscUI");
         GameManager.Instance.ResumeGame();
     }
 
