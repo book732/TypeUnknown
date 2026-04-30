@@ -5,7 +5,8 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    
+    [SerializeField] private Player _player;
+    [SerializeField] private GameObject _startPoint;
     public bool isGamePause = false;
     public bool isGameOver = false;
     
@@ -19,6 +20,17 @@ public class GameManager : MonoBehaviour
         else if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
+        }
+
+        _player.PlayerDead += PlayerRespawn;
+    }
+
+    private void PlayerRespawn()
+    {
+        if (_player != null)
+        {
+            _player.transform.position = _startPoint.transform.position;
+            _player.init();
         }
     }
 

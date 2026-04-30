@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioClip _walkFootSound;
     [SerializeField] private AudioClip _runFootSound;
     private AudioSource _playerAudioSource;
+    public Action PlayerDead;
     
     private float _speed;
     private bool _isSprint;
@@ -49,6 +50,7 @@ public class Player : MonoBehaviour
     float timeElapsed = 0f;
     private Vector3 _baseCamera;
 
+    //카메라등 처음 Player만들때만 할당.
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -56,10 +58,14 @@ public class Player : MonoBehaviour
         inventoryUI.InitInventory(inventory);
         inventory.OnActiveInventorySlotchanged += GenerateAndInitializeActiveItem;
         _monsterHandTag = "MonsterHand";
+        _camera = GetComponentInChildren<CinemachineFollow>();
+        _baseCamera = _cameraPos.transform.localPosition;
+        _playerAudioSource = GetComponent<AudioSource>();
         init();
     }
 
-    private void init()
+    //리스폰시 초기화 작업 위해 카메라,오디오소스 등은 Awake함수로 이동.
+    public void init()
     {
         _usingStamina = 10f;
         _stamina = 100f;
@@ -70,9 +76,6 @@ public class Player : MonoBehaviour
         _isPlayerStop = false;
         _escapeClickCount = 0;
         _requiredEscapeClicks = 10;
-        _camera = GetComponentInChildren<CinemachineFollow>();
-        _baseCamera = _cameraPos.transform.localPosition;
-        _playerAudioSource = GetComponent<AudioSource>();
     }
 
     private void OnEnable()
@@ -169,6 +172,11 @@ public class Player : MonoBehaviour
     public void PlayerTakeDamage(float damage)
     {
         _mental -= damage;
+
+        if (_mental <= 0)
+        {
+            PlayerDead?.Invoke();
+        }
     }
     
     private void TryEscape()
