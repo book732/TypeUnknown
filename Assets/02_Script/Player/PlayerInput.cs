@@ -18,6 +18,8 @@ public class PlayerInput : MonoBehaviour
         //키바인딩        
         BindAction(inputActions.Player.Move, OnMove);
         BindAction(inputActions.Player.Pick, GetItem);
+
+        //Interect item 이 TODO 입력 이상하게들어오는데 이거수정할것 
         BindAction(inputActions.Player.Interact, InteractItem);
         BindAction(inputActions.Player.Jump, Jump);
         BindAction(inputActions.Player.Look, Look);
