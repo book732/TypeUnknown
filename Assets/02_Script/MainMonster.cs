@@ -8,14 +8,16 @@ public class MainMonster : BaseMonster
 {
     private readonly int hashFindPlayer = Animator.StringToHash("FindPlayer");
     private readonly int hashIsAttack = Animator.StringToHash("IsAttack");
-    [SerializeField] private Transform StartPoint;
+    [SerializeField] private Transform _startPoint;
+    [SerializeField] private AudioSource _mainMonsterSFX;
+    [SerializeField] private AudioClip _chaseClip;
+    [SerializeField] private AudioClip _attackClip;
 
     private void OnEnable()
     {
         StartCoroutine(MonsterState());
         StartCoroutine(MonsterAction());
     }
-    
     protected override void Init()
     {
         base.Init();
@@ -45,10 +47,19 @@ public class MainMonster : BaseMonster
             else if (distance <= _traceDist * _traceDist)
             {
                 _monsterState = global::MonsterState.TRACERUN;
+                if (distance <= _traceDist*_traceDist && distance > 12f*12f)
+                {
+                    ChangedSFX(_chaseClip);
+                }
+                else if(distance <= 12f*12f)
+                {
+                    ChangedSFX(_attackClip);
+                }
             }
             else
             {
                 _monsterState = global::MonsterState.WALKING;
+                ChangedSFX(null);
             }
             yield return _ws;
         }
@@ -74,7 +85,7 @@ public class MainMonster : BaseMonster
                     _navMeshAgent.isStopped = true;
                     break;
                 case global::MonsterState.WALKING:
-                    _navMeshAgent.SetDestination(StartPoint.position);
+                    _navMeshAgent.SetDestination(_startPoint.position);
                     _animator.ResetTrigger(hashFindPlayer);
                     _animator.SetBool(hashIsAttack,false);
                     break;
@@ -82,4 +93,14 @@ public class MainMonster : BaseMonster
             yield return _ws;
         }
     }
+
+    private void ChangedSFX(AudioClip clip)
+    {
+        if (_mainMonsterSFX.clip != clip)
+        {
+            _mainMonsterSFX.clip = clip;
+            _mainMonsterSFX.Play();
+        }
+    }
+    
 }
