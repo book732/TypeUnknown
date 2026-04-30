@@ -156,6 +156,10 @@ PrefabInstance:
       value: IDOL 2Prefab 5
       objectReference: {fileID: 0}
     - target: {fileID: 2978861661846278773, guid: 9b90bc5e730ceef42b9d4c865fb40050, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2978861661846278773, guid: 9b90bc5e730ceef42b9d4c865fb40050, type: 3}
       propertyPath: m_TagString
       value: Monster
       objectReference: {fileID: 0}
