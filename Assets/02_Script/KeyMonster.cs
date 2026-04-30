@@ -8,6 +8,10 @@ public class KeyMonster : BaseMonster
     private readonly int hashIsWalking = Animator.StringToHash("Walking");
     private readonly int hashIsRun = Animator.StringToHash("Run");
     private readonly int hashIsAttack = Animator.StringToHash("Attack");
+    [SerializeField] private AudioSource _mainMonsterSFX;
+    [SerializeField] private AudioClip _chaseClip;
+    [SerializeField] private AudioClip _attackClip;
+    [SerializeField] private AudioClip _mainClip;
     private Vector3 _monsterMove;
     private Vector3 _monsterWalkPos;
 
@@ -73,8 +77,10 @@ public class KeyMonster : BaseMonster
                     break;
                 case MonsterState.TRACERUN:
                     _navMeshAgent.SetDestination(_playerTransform.position);
+
                     break;
                 case MonsterState.ATTACK:
+
                     break;
             }
             yield return _ws;
@@ -88,11 +94,13 @@ public class KeyMonster : BaseMonster
             if (dist < _attackDist * _attackDist )
             {
                     ChangeState(MonsterState.ATTACK);
+
             }
             else if (dist < _traceDist * _traceDist)
             {
                 //_monsterState = MonsterState.TRACERUN;
                 ChangeState(MonsterState.TRACERUN);
+
             }
             else if(_monsterState != MonsterState.IDLE && _monsterState != MonsterState.WALKING && dist > _attackDist * _attackDist)
             {
@@ -113,6 +121,7 @@ public class KeyMonster : BaseMonster
                 _animator.SetBool(hashIsAttack, false);
                 _navMeshAgent.isStopped = true;
                 _navMeshAgent.ResetPath();
+                ChangedSFX(_mainClip);
                 break;
             case MonsterState.WALKING:
                 _animator.SetBool(hashIsRun, false);
@@ -127,6 +136,7 @@ public class KeyMonster : BaseMonster
                 _animator.SetBool(hashIsRun, true);
                 _navMeshAgent.isStopped = false;
                 _navMeshAgent.speed = _runSpeed;
+                ChangedSFX(_chaseClip);
                 break;
             case MonsterState.ATTACK:
                 _animator.SetBool(hashIsWalking, false);
@@ -134,6 +144,7 @@ public class KeyMonster : BaseMonster
                 _animator.SetBool(hashIsAttack, true);
                 _navMeshAgent.ResetPath();
                 _navMeshAgent.isStopped = true;
+                ChangedSFX(_attackClip);
                 break;
         }
     }
@@ -145,6 +156,15 @@ public class KeyMonster : BaseMonster
         _monsterMove = new Vector3(_posX,0f,_posY);
         _monsterWalkPos =  this.transform.position + _monsterMove;
         return  _monsterWalkPos;
+    }
+    
+    private void ChangedSFX(AudioClip clip)
+    {
+        if (_mainMonsterSFX.clip != clip)
+        {
+            _mainMonsterSFX.clip = clip;
+            _mainMonsterSFX.Play();
+        }
     }
     
 }
