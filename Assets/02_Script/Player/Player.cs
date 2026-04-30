@@ -1,5 +1,6 @@
 using NUnit.Framework.Interfaces;
 using System;
+using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -58,7 +59,14 @@ public class Player : MonoBehaviour
         if (item == null) return;
 
 
+
+
         ActiveItem = Instantiate(item, HandTransform.position, Quaternion.identity);
+        var collider = ActiveItem.GetComponent<Collider>();
+        if (collider != null)
+        {
+            collider.enabled = false;
+        }
         ActiveItem.transform.SetParent(HandTransform);
 
 
@@ -115,9 +123,16 @@ public class Player : MonoBehaviour
     private ItemData Existitem()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, 2f))
+        Vector3 startposition = transform.position;
+        Vector3 halfextension = new Vector3(0.5f, 0.5f, 0.5f);
+        Vector3 direction = transform.forward;
+        Quaternion rotation = transform.rotation;
+        float distance = 1f;
+
+
+        if (Physics.BoxCast(transform.position, halfextension, direction, out hit, rotation, distance))
         {
-            Debug.DrawRay(transform.position, transform.forward * hit.distance, Color.red);
+            //TODO 이거원인찾기 그리고기즈모다시그리기 
 
             if (hit.collider.CompareTag("Item"))
             {
@@ -136,11 +151,32 @@ public class Player : MonoBehaviour
         {
             return null;
         }
+
+
     }
+    void OnDrawGizmos()
+    {
+        Vector3 center = transform.position;
+        Vector3 halfExtents = new Vector3(0.5f, 0.5f, 0.5f);
+        Quaternion rot = transform.rotation;
+        Vector3 dir = transform.forward;
+        float dist = 1f;
 
 
+        Gizmos.color = Color.red;
+        Gizmos.matrix = Matrix4x4.TRS(center, rot, Vector3.one);
+        Gizmos.DrawWireCube(Vector3.zero, halfExtents * 2);
 
 
+        Vector3 endCenter = center + dir * dist;
+        Gizmos.color = Color.blue;
+        Gizmos.matrix = Matrix4x4.TRS(endCenter, rot, Vector3.one);
+        Gizmos.DrawWireCube(Vector3.zero, halfExtents * 2);
+
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawLine(center, endCenter);
+    }
 
 
 

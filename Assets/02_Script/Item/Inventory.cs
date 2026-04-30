@@ -7,10 +7,11 @@ public class Inventory
 
     private int ActiveInventorySlot;
     public event Action<int> OnActiveInventorySlotchanged;
+    public event Action<ItemData> OnItemAdded;
     private bool isFull;
     [SerializeField] private int maxInventorySlot = 4;
     public ItemInstance[] items;
-    public event Action<ItemData> OnItemAdded;
+
 
 
     public Inventory()
