@@ -12,6 +12,7 @@ public class EndingZone : MonoBehaviour
 
             if (player != null && player.HasItem("Doll"))
             {
+                Debug.Log("Å¬¸®¾î");
                 GameManager.Instance.QuitGame();
 
             }
