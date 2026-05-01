@@ -55,6 +55,10 @@ public class Player : MonoBehaviour
     private Vector3 _baseCamera;
     private CinemachineImpulseSource _impulseSource;
     private Vector3 _monsterPos;
+
+    //UI settings
+    [SerializeField] InGameUIManager uIManager;
+    public event Action OnItemDetected;
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -66,6 +70,7 @@ public class Player : MonoBehaviour
         _baseCamera = _cameraPos.transform.localPosition;
         _playerAudioSource = GetComponent<AudioSource>();
         init();
+
     }
 
     //리스폰시 초기화 작업 위해 카메라,오디오소스 등은 Awake함수로 이동.
@@ -265,7 +270,7 @@ public class Player : MonoBehaviour
 
 
 
-        ActiveItem = Instantiate(item, HandTransform.position, HandTransform.rotation * item.transform.rotation); 
+        ActiveItem = Instantiate(item, HandTransform.position, HandTransform.rotation * item.transform.rotation);
         var collider = ActiveItem.GetComponent<Collider>();
         if (collider != null)
         {
@@ -303,7 +308,7 @@ public class Player : MonoBehaviour
         _rotationInput = input.x * 0.1f;
 
     }
-    
+
     private void SetMove(Vector2 input)
     {
         horizontalInput = input.x;
@@ -311,11 +316,14 @@ public class Player : MonoBehaviour
         //   Debug.Log("Move Event Received: " + input);
     }
 
+
+
+
     private ItemData Existitem()
     {
         RaycastHit hit;
         Vector3 startposition = transform.position;
-        Vector3 halfextension = new Vector3(0.5f, 0.5f, 0.5f);
+        Vector3 halfextension = new Vector3(1f, 1f, 1f);
         Vector3 direction = transform.forward;
         Quaternion rotation = transform.rotation;
         float distance = 1f;
@@ -323,7 +331,9 @@ public class Player : MonoBehaviour
 
         if (Physics.BoxCast(transform.position, halfextension, direction, out hit, rotation, distance))
         {
-            //TODO 이거원인찾기 그리고기즈모다시그리기 
+
+
+            //TODO 아이템방식수정할것 (현재는 E키입력이먼저인데  탐지먼저되게 그래야  UI가능함)
 
             if (hit.collider.CompareTag("Item"))
             {
@@ -349,7 +359,7 @@ public class Player : MonoBehaviour
     void OnDrawGizmos()
     {
         Vector3 center = transform.position;
-        Vector3 halfExtents = new Vector3(0.5f, 0.5f, 0.5f);
+        Vector3 halfExtents = new Vector3(1f, 1f, 1f);
         Quaternion rot = transform.rotation;
         Vector3 dir = transform.forward;
         float dist = 1f;
