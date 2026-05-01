@@ -15,13 +15,13 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioClip _walkFootSound;
     [SerializeField] private AudioClip _runFootSound;
     private AudioSource _playerAudioSource;
-    
+
     private float _speed;
     private bool _isSprint;
     private float _usingStamina;
     private float _recoverStamina;
     private bool _isCantSprint;
-    
+
     //inventory settings
     private Rigidbody rb;
     private float horizontalInput;
@@ -32,11 +32,11 @@ public class Player : MonoBehaviour
     [SerializeField] private InputEventSO inputEventSO;
     [SerializeField] private InventoryUI inventoryUI;
     [SerializeField] Transform HandTransform;
-    
-    
+
+
     //monster tag 
     private string _monsterHandTag;
-    
+
     //monster timer
     private float _timer = 0f;
     private float _timer2 = 0f;
@@ -84,7 +84,7 @@ public class Player : MonoBehaviour
         inputEventSO.SubscribeSprint(Sprint);
         StartCoroutine(PlayerSprint());
     }
-    
+
     private void OnDisable()
     {
         inputEventSO.UnSubscribeMove(SetMove);
@@ -121,14 +121,14 @@ public class Player : MonoBehaviour
             _playerAudioSource.Play();
         }
     }
-    
+
     private IEnumerator PlayerSprint()
     {
         while (true)
         {
-            if (_isSprint && _stamina>0f)
+            if (_isSprint && _stamina > 0f)
             {
-                _stamina -= _usingStamina*Time.deltaTime;
+                _stamina -= _usingStamina * Time.deltaTime;
                 _stamina = Mathf.Max(_stamina, 0f);
                 _speed = 10f;
                 ChangeSound(_runFootSound);
@@ -143,7 +143,7 @@ public class Player : MonoBehaviour
             //!_isSprint || _stamina<=0
             else
             {
-                _stamina += _recoverStamina*Time.deltaTime;
+                _stamina += _recoverStamina * Time.deltaTime;
                 _stamina = Mathf.Min(_stamina, 100f);
                 _speed = 5f;
                 ChangeSound(_walkFootSound);
@@ -152,7 +152,7 @@ public class Player : MonoBehaviour
             yield return new WaitForSeconds(0.003f);
         }
     }
-    
+
     private void Movement()
     {
         Vector3 movement = new Vector3(horizontalInput, 0, verticalInput) * _speed * Time.deltaTime;
@@ -170,7 +170,7 @@ public class Player : MonoBehaviour
     {
         _mental -= damage;
     }
-    
+
     private void TryEscape()
     {
         // 잡혀있는 상태가 아니면 무시
@@ -194,11 +194,11 @@ public class Player : MonoBehaviour
     private void PlayerView()
     {
         float t = timeElapsed / 0.5f;
-        _camera.FollowOffset = Vector3.Lerp(_baseCamera, new Vector3(0f,0.88f,0.21f),t);
+        _camera.FollowOffset = Vector3.Lerp(_baseCamera, new Vector3(0f, 0.88f, 0.21f), t);
         timeElapsed += Time.deltaTime;
     }
-    
-    
+
+    //TODO 매번생성하고없애서 성능낭비 심함 OBJECTPOOLING으로바꾸거나 이제같으면계속쓰느식으로 
     private void GenerateAndInitializeActiveItem(int activeslotIndex)
     {
         //이전에생성한 아이템이있으면 destroy  하는 코드  같으면 그대로빠져나가고 
@@ -232,12 +232,13 @@ public class Player : MonoBehaviour
 
     private void InteractItem()
     {
+        inventory.UseActiveItem(this.gameObject);
         Debug.Log("Interacted with item");
     }
 
     private void Sprint(bool _isRun)
     {
-        _isSprint =  _isRun;
+        _isSprint = _isRun;
     }
 
     private void Detectitem()
@@ -259,7 +260,7 @@ public class Player : MonoBehaviour
         //   Debug.Log("Move Event Received: " + input);
 
     }
-    
+
     private ItemData Existitem()
     {
         RaycastHit hit;
@@ -294,7 +295,7 @@ public class Player : MonoBehaviour
 
 
     }
-    
+
     void OnDrawGizmos()
     {
         Vector3 center = transform.position;
