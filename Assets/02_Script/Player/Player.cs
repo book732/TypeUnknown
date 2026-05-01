@@ -16,7 +16,7 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioClip _runFootSound;
     private AudioSource _playerAudioSource;
     public Action PlayerDead;
-    
+
     private float _speed;
     private bool _isSprint;
     private float _usingStamina;
@@ -48,7 +48,7 @@ public class Player : MonoBehaviour
     [SerializeField] private CinemachineFollow _camera;
     [SerializeField] private GameObject _cameraPos;
     float timeElapsed = 0f;
-    
+
     //escape screen settings 
     private Vector3 _baseCamera;
     private CinemachineImpulseSource _impulseSource;
@@ -203,7 +203,7 @@ public class Player : MonoBehaviour
         {
             Debug.Log("탈출 성공!");
             this.transform.position = _monsterPos;
-            
+
             _camera.FollowOffset = _baseCamera;
             _isPlayerStop = false;
             _escapeClickCount = 0; // 카운트 초기화
@@ -217,6 +217,11 @@ public class Player : MonoBehaviour
         float t = timeElapsed / 0.5f;
         _camera.FollowOffset = Vector3.Lerp(_baseCamera, new Vector3(0f, 0.88f, 0.21f), t);
         timeElapsed += Time.deltaTime;
+    }
+
+    public bool HasItem(string itemName)
+    {
+        return inventory.HasItem(itemName);
     }
 
     //TODO 매번생성하고없애서 성능낭비 심함 OBJECTPOOLING으로바꾸거나 이제같으면계속쓰느식으로 

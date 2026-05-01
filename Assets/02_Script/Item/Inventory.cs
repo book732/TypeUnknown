@@ -48,7 +48,15 @@ public class Inventory
 
         }
     }
-
+    public bool HasItem(string itemName)
+    {
+        foreach (var item in items)
+        {
+            if (item != null && item.ItemData.ItemName == itemName)
+                return true;
+        }
+        return false;
+    }
 
     public void AddItem(ItemInstance itemInstance)
     {
