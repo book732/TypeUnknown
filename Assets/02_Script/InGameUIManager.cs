@@ -13,6 +13,10 @@ public class InGameUIManager : MonoBehaviour
     [SerializeField] private GameObject _settingPanel;
     [SerializeField] private Button _quitMenuButton;
     [SerializeField] private Canvas _canvas;
+    //Ãß°¡º»
+    [SerializeField] private InventoryUI _inventoryUI;
+    [SerializeField] private Image _itempickupImage;
+
 
     private void OnEnable()
     {
@@ -34,7 +38,7 @@ public class InGameUIManager : MonoBehaviour
         _volumeSlider.onValueChanged.RemoveListener(AudioManager.Instance.SetVolume);
         _quitMenuButton.onClick.RemoveListener(OnQuitMenuButtonClick);
     }
-    
+
     private void OnSettingsButtonClick()
     {
         _settingPanel.SetActive(true);
@@ -48,7 +52,7 @@ public class InGameUIManager : MonoBehaviour
     {
         _settingPanel.SetActive(false);
     }
-    
+
     private void OnResumeGameClick()
     {
         SceneManager.UnloadSceneAsync("EscUI");
@@ -57,6 +61,6 @@ public class InGameUIManager : MonoBehaviour
 
     private void LoadVolume()
     {
-        _volumeSlider.value = PlayerPrefs.GetFloat("VOLUME",1f);
+        _volumeSlider.value = PlayerPrefs.GetFloat("VOLUME", 1f);
     }
 }
