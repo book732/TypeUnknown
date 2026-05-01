@@ -264,7 +264,7 @@ public class Player : MonoBehaviour
 
 
 
-        ActiveItem = Instantiate(item, HandTransform.position, Quaternion.identity);
+        ActiveItem = Instantiate(item, HandTransform.position,item.transform.rotation );
         var collider = ActiveItem.GetComponent<Collider>();
         if (collider != null)
         {
