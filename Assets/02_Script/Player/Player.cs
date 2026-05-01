@@ -16,7 +16,7 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioClip _runFootSound;
     private AudioSource _playerAudioSource;
     public Action PlayerDead;
-    
+
     [SerializeField] private float _rotateSpeed;
     private float _speed;
     private bool _isSprint;
@@ -50,7 +50,7 @@ public class Player : MonoBehaviour
     [SerializeField] private CinemachineFollow _camera;
     [SerializeField] private GameObject _cameraPos;
     float timeElapsed = 0f;
-    
+
     //escape screen settings 
     private Vector3 _baseCamera;
     private CinemachineImpulseSource _impulseSource;
@@ -81,7 +81,7 @@ public class Player : MonoBehaviour
         _escapeClickCount = 0;
         _requiredEscapeClicks = 10;
         _rotateSpeed = 10f;
-        
+
         _camera = GetComponentInChildren<CinemachineFollow>();
         _baseCamera = _cameraPos.transform.localPosition;
         _playerAudioSource = GetComponent<AudioSource>();
@@ -180,11 +180,11 @@ public class Player : MonoBehaviour
     private void PlayerRoation()
     {
         float mouseX = Input.GetAxis("Mouse X");
-        float turnAmount = mouseX* _rotateSpeed ;
-        
+        float turnAmount = mouseX * _rotateSpeed;
+
         Quaternion turnRotation = Quaternion.Euler(0, turnAmount, 0);
         rb.MoveRotation(rb.rotation * turnRotation);
-        
+
     }
 
     private void OnTriggerEnter(Collider other)
@@ -222,7 +222,7 @@ public class Player : MonoBehaviour
         {
             Debug.Log("탈출 성공!");
             this.transform.position = _monsterPos;
-            
+
             _camera.FollowOffset = _baseCamera;
             _isPlayerStop = false;
             _escapeClickCount = 0; // 카운트 초기화
@@ -263,8 +263,7 @@ public class Player : MonoBehaviour
 
 
 
-
-        ActiveItem = Instantiate(item, HandTransform.position,item.transform.rotation );
+        ActiveItem = Instantiate(item, HandTransform.position, item.transform.rotation);
         var collider = ActiveItem.GetComponent<Collider>();
         if (collider != null)
         {
