@@ -1,4 +1,5 @@
 using System;
+using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -25,7 +26,7 @@ public class GameManager : MonoBehaviour
         _player.PlayerDead += PlayerRespawn;
     }
 
-    private void PlayerRespawn()
+    public void PlayerRespawn()
     {
         if (_player != null)
         {
