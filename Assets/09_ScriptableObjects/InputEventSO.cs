@@ -34,6 +34,24 @@ public class InputEventSO : ScriptableObject
 
     #endregion
     
+    #region 회전
+    public void SubscribeLook(Action<Vector2> listener)
+    {
+        OnLook += listener;
+    }
+
+    public void UnSubscribeLook(Action<Vector2> listener)
+    {
+        OnLook -= listener;
+    }
+
+    public void RaiseLookEvent(Vector2 input)
+    {
+        OnLook?.Invoke(input);
+        //  Debug.Log("Move Event Raised: " + input);
+    }
+    #endregion
+    
     
     #region 이동
     public void SubscribeMove(Action<Vector2> listener)

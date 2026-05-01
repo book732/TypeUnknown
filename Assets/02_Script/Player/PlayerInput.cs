@@ -37,7 +37,8 @@ public class PlayerInput : MonoBehaviour
 
     private void Look(InputAction.CallbackContext context)
     {
-
+        Vector2 input = context.ReadValue<Vector2>();
+        inputEventSO.RaiseLookEvent(input);
     }
 
     private void Jump(InputAction.CallbackContext context)
@@ -108,7 +109,7 @@ public class PlayerInput : MonoBehaviour
         UnBindAction(inputActions.Player.ItemChange, ItemChange);
         UnBindAction(inputActions.Player.Escape, Escape);
         UnBindAction(inputActions.Player.Sprint, Sprint);
-
+        UnBindAction(inputActions.Player.Look, Look);
         inputActions.Player.Disable();
     }
 }

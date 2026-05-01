@@ -16,7 +16,7 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioClip _runFootSound;
     private AudioSource _playerAudioSource;
     public Action PlayerDead;
-    
+
     [SerializeField] private float _rotateSpeed;
     private float _speed;
     private bool _isSprint;
@@ -50,7 +50,7 @@ public class Player : MonoBehaviour
     [SerializeField] private CinemachineFollow _camera;
     [SerializeField] private GameObject _cameraPos;
     float timeElapsed = 0f;
-    
+
     //escape screen settings 
     private Vector3 _baseCamera;
     private CinemachineImpulseSource _impulseSource;
@@ -81,7 +81,7 @@ public class Player : MonoBehaviour
         _escapeClickCount = 0;
         _requiredEscapeClicks = 10;
         _rotateSpeed = 10f;
-        
+
         _camera = GetComponentInChildren<CinemachineFollow>();
         _baseCamera = _cameraPos.transform.localPosition;
         _playerAudioSource = GetComponent<AudioSource>();
@@ -90,6 +90,7 @@ public class Player : MonoBehaviour
 
     private void OnEnable()
     {
+        inputEventSO.SubscribeLook(SetLook);
         inputEventSO.SubscribeMove(SetMove);
         inputEventSO.SubscribePickup(Detectitem);
         inputEventSO.SubscribeInteract(InteractItem);
@@ -100,6 +101,7 @@ public class Player : MonoBehaviour
 
     private void OnDisable()
     {
+        inputEventSO.UnSubscribeMove(SetLook);
         inputEventSO.UnSubscribeMove(SetMove);
         inputEventSO.UnSubscribePickup(Detectitem);
         inputEventSO.UnSubscribeInteract(InteractItem);
@@ -169,22 +171,21 @@ public class Player : MonoBehaviour
 
     private void Movement()
     {
-        Vector3 movement = new Vector3(horizontalInput, 0, verticalInput) * _speed * Time.deltaTime;
+        Vector3 moveForward = transform.forward * verticalInput;
+        Vector3 moveRight = transform.right * horizontalInput;
+        Vector3 moveDirection = (moveForward + moveRight).normalized;
+        Vector3 movement = moveDirection * _speed * Time.deltaTime;
         rb.MovePosition(transform.position + movement);
-        /*float turnAmount = _rotationInput * _rotateSpeed * Time.deltaTime;
-        
-        Quaternion turnRotation = Quaternion.Euler(0, turnAmount, 0);
-        rb.MoveRotation(rb.rotation * turnRotation);*/
     }
 
     private void PlayerRoation()
     {
         float mouseX = Input.GetAxis("Mouse X");
-        float turnAmount = mouseX* _rotateSpeed ;
-        
+        float turnAmount = mouseX * _rotateSpeed;
+
         Quaternion turnRotation = Quaternion.Euler(0, turnAmount, 0);
         rb.MoveRotation(rb.rotation * turnRotation);
-        
+
     }
 
     private void OnTriggerEnter(Collider other)
@@ -222,7 +223,7 @@ public class Player : MonoBehaviour
         {
             Debug.Log("탈출 성공!");
             this.transform.position = _monsterPos;
-            
+
             _camera.FollowOffset = _baseCamera;
             _isPlayerStop = false;
             _escapeClickCount = 0; // 카운트 초기화
@@ -264,7 +265,7 @@ public class Player : MonoBehaviour
 
 
 
-        ActiveItem = Instantiate(item, HandTransform.position,item.transform.rotation );
+        ActiveItem = Instantiate(item, HandTransform.position, HandTransform.rotation * item.transform.rotation); 
         var collider = ActiveItem.GetComponent<Collider>();
         if (collider != null)
         {
@@ -297,13 +298,17 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void SetLook(Vector2 input)
+    {
+        _rotationInput = input.x * 0.1f;
+
+    }
+    
     private void SetMove(Vector2 input)
     {
         horizontalInput = input.x;
         verticalInput = input.y;
-        _rotationInput = input.x * 0.1f;
         //   Debug.Log("Move Event Received: " + input);
-
     }
 
     private ItemData Existitem()
