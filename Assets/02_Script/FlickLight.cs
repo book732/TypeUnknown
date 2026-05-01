@@ -19,9 +19,12 @@ public class FlickLight : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        StopCoroutine(_flicker);
-        _flicker = null;
-        _light.SetActive(true);
+        if (other.CompareTag("Monster") && _flicker != null)
+        {
+            StopCoroutine(_flicker);
+            _flicker = null;
+            _light.SetActive(true);
+        }
     }
     
     
