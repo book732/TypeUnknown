@@ -49,8 +49,8 @@ public class KeyMonster : BaseMonster
         ChangeState(MonsterState.IDLE);
         StartCoroutine(MonsterSetStateCo());
     }
-    
 
+    
     private IEnumerator MonsterSetStateCo()
     {
         while (true)
@@ -93,7 +93,7 @@ public class KeyMonster : BaseMonster
             float dist = (_playerTransform.position - this.transform.position).sqrMagnitude;
             if (dist < _attackDist * _attackDist )
             {
-                this.transform.LookAt(_playerTransform);
+                //this.transform.LookAt(_playerTransform);
                 ChangeState(MonsterState.ATTACK);
 
             }

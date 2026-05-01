@@ -34,6 +34,8 @@ public class Player : MonoBehaviour
     [SerializeField] Transform HandTransform;
     
     
+    
+    
     //monster tag 
     private string _monsterHandTag;
     
@@ -47,8 +49,11 @@ public class Player : MonoBehaviour
     [SerializeField] private CinemachineFollow _camera;
     [SerializeField] private GameObject _cameraPos;
     float timeElapsed = 0f;
+    
+    //escape screen settings 
     private Vector3 _baseCamera;
-
+    private CinemachineImpulseSource _impulseSource;
+    private Vector3 _monsterPos;
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -73,6 +78,7 @@ public class Player : MonoBehaviour
         _camera = GetComponentInChildren<CinemachineFollow>();
         _baseCamera = _cameraPos.transform.localPosition;
         _playerAudioSource = GetComponent<AudioSource>();
+        _impulseSource = GetComponent<CinemachineImpulseSource>();
     }
 
     private void OnEnable()
@@ -164,6 +170,11 @@ public class Player : MonoBehaviour
         if (other.CompareTag(_monsterHandTag) == true)
         {
             _isPlayerStop = true;
+            Debug.Log($"{other.transform.forward}");
+            Vector3 forward = other.transform.forward;
+            forward.y = 0;
+            forward.Normalize();
+            _monsterPos = (forward * 3f) + this.transform.position;
         }
     }
     public void PlayerTakeDamage(float damage)
@@ -178,11 +189,13 @@ public class Player : MonoBehaviour
 
         _escapeClickCount++;
         Debug.Log($"탈출 시도 중! ({_escapeClickCount} / {_requiredEscapeClicks})");
-
+        _impulseSource.GenerateImpulse();
         // 요구 횟수를 채우면 탈출 성공
         if (_escapeClickCount >= _requiredEscapeClicks)
         {
             Debug.Log("탈출 성공!");
+            this.transform.position = _monsterPos;
+            
             _camera.FollowOffset = _baseCamera;
             _isPlayerStop = false;
             _escapeClickCount = 0; // 카운트 초기화
