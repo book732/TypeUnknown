@@ -11,5 +11,6 @@ AssetOrigin:
   productId: 48529
   packageName: Flooded Grounds
   packageVersion: 1.1
-  assetPath: Assets/Flooded_Grounds/Content/Trees/SrcMeshes/Materials/No Name.mat
+  assetPath: Assets/Resources/Flooded_Grounds/Content/Trees/SrcMeshes/Materials/No
+    Name.mat
   uploadId: 227274
