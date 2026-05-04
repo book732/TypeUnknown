@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: flashlight
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: flashlight
-  itemIcon: {fileID: 21300000, guid: 205c35c8018ad9842aa1133e643a865c, type: 3}
+  itemIcon: {fileID: 21300000, guid: 78d25f504f108e543bb7ea19782e5d29, type: 3}
   itemAction: {fileID: 11400000, guid: cb1a0b55b3066c94ba4578484de4a568, type: 2}
   itemPrefab: {fileID: 4190109750653322610, guid: 11aef18926c53d44e9fdab82cbd07b57, type: 3}
   isConsumable: 0
