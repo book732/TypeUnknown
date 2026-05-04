@@ -13,6 +13,8 @@ public class InputEventSO : ScriptableObject
     public Action<Vector2> OnChangeItem;
     public Action OnEscape;
     public Action<bool> OnSprint;
+    public Action<bool> OnOpenMenu;
+    public Action<bool> OnOpenInven;
 
 
     #region Å»Ãâ
@@ -144,6 +146,44 @@ public class InputEventSO : ScriptableObject
     {
         OnSprint?.Invoke(_isRun);
     }
+    #endregion
+
+    #region esc¸Þ´º¿ÀÇÂ
+
+    public void SubscribeMenu(Action<bool> listener)
+    {
+        OnOpenMenu += listener;
+    }
+
+    public void UnSubscribeMenu(Action<bool> listener)
+    {
+        OnOpenMenu -= listener;
+    }
+
+    public void RaiseMenuEvent(bool _isOpenUI)
+    {
+        OnOpenMenu?.Invoke(_isOpenUI);
+    }
 
     #endregion
+
+    #region ÀÎº¥UI
+
+    public void SubscribeInven(Action<bool> listener)
+    {
+        OnOpenInven += listener;
+    }
+
+    public void UnSubscribeInven(Action<bool> listener)
+    {
+        OnOpenInven -= listener;
+    }
+
+    public void RaiseInvenEvent(bool _isOpenInven)
+    {
+        OnOpenInven?.Invoke(_isOpenInven);
+    }
+
+    #endregion
+   
 }

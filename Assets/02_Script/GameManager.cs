@@ -35,15 +35,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    //esc로 메뉴 UI확인용.
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            SceneManager.LoadScene("EscUI", LoadSceneMode.Additive);
-        }
-    }
-
     public void PauseGame()
     {
         Time.timeScale = 0f;

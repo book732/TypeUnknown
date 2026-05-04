@@ -95,8 +95,14 @@ public class InventoryUI : MonoBehaviour
     {
         foreach (var slot in inventorySlots)
         {
+            Color itemColor = slot.itemIcon.color;
+            Color textColor = slot.itemCount.color;
             slot.itemIcon.sprite = null;
             slot.itemCount.text = "0";
+            itemColor.a = 0f;
+            textColor.a = 0f;
+            slot.itemIcon.color = itemColor;
+            slot.itemCount.color = textColor;
         }
 
 
@@ -110,9 +116,16 @@ public class InventoryUI : MonoBehaviour
     private void UpdateInventoryUI(int index, ItemInstance itemInstance)
     {
         var slot = inventorySlots[index];
-
+        Color itemColor = slot.itemIcon.color;
+        Color textColor = slot.itemCount.color;
+        
         if (itemInstance == null)
         {
+            itemColor.a = 0f;
+            textColor.a = 0f;
+            
+            slot.itemIcon.color = itemColor;
+            slot.itemCount.color = textColor;
             slot.itemIcon.sprite = null;
             slot.itemCount.text = "0";
             return;
@@ -120,7 +133,10 @@ public class InventoryUI : MonoBehaviour
 
         slot.itemIcon.sprite = itemInstance.ItemData.ItemIcon;
         slot.itemCount.text = itemInstance.ItemCount.ToString();
-
+        itemColor.a = 1f;
+        textColor.a = 1f;
+        slot.itemIcon.color = itemColor;
+        slot.itemCount.color = textColor;
         currentSlot = inventorySlots[index];
     }
 
