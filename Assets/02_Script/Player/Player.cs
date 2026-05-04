@@ -154,7 +154,7 @@ public class Player : MonoBehaviour
             _inGameUI.SetActive(false);
         }
     }
-    
+
     private void OpenInventory(bool _isPlayerOpenInven)
     {
         if (_isPlayerOpenInven)
@@ -180,7 +180,7 @@ public class Player : MonoBehaviour
         _inventoryGroup.interactable = true;
         _inventoryGroup.blocksRaycasts = true;
     }
-    
+
     private void ChangeSound(AudioClip clip)
     {
         if (_playerAudioSource.clip != clip)
