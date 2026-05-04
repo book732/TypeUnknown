@@ -1,5 +1,58 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2413513938743719474
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5020656023968071513}
+  - component: {fileID: 8471406025358501379}
+  m_Layer: 0
+  m_Name: Collider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5020656023968071513
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2413513938743719474}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4955475071061056570}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &8471406025358501379
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2413513938743719474}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 1024
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 2
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &3090513904906578368
 GameObject:
   m_ObjectHideFlags: 0
@@ -15,8 +68,8 @@ GameObject:
   - component: {fileID: 6214515618482784545}
   - component: {fileID: 367922614727614376}
   - component: {fileID: 4805198508533627332}
-  - component: {fileID: 1116657961378225556}
-  - component: {fileID: 6940644964893897273}
+  - component: {fileID: 2271662219466318053}
+  - component: {fileID: 4455835226399776762}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -39,6 +92,7 @@ Transform:
   m_Children:
   - {fileID: 1709404062562427610}
   - {fileID: 9107628860691585393}
+  - {fileID: 5020656023968071513}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &5800950080412691492
@@ -117,8 +171,8 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
+  m_Radius: 0.2
+  m_Height: 4
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &6214515618482784545
@@ -178,6 +232,9 @@ MonoBehaviour:
   _cantSprint: {fileID: 8300000, guid: 7caffa1c7dda8f941a538e7352ca46be, type: 3}
   _walkFootSound: {fileID: 8300000, guid: c25427e68d9487b41b2094c0ade669fc, type: 3}
   _runFootSound: {fileID: 8300000, guid: 9acb25e556561744cb4e84a47a42126a, type: 3}
+  _defaultSound: {fileID: 0}
+  _inGameUI: {fileID: 0}
+  _inventoryGroup: {fileID: 0}
   _rotateSpeed: 0
   inputEventSO: {fileID: 11400000, guid: cfa4c06143da9fd4e8b77fb3c37d15f2, type: 2}
   inventoryUI: {fileID: 0}
@@ -185,7 +242,8 @@ MonoBehaviour:
   _isPlayerStop: 0
   _camera: {fileID: 0}
   _cameraPos: {fileID: 4233697616326202602}
---- !u!82 &1116657961378225556
+  uIManager: {fileID: 0}
+--- !u!82 &2271662219466318053
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -282,7 +340,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &6940644964893897273
+--- !u!114 &4455835226399776762
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -344,8 +402,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9107628860691585393}
-  - component: {fileID: 8845171954500246774}
-  - component: {fileID: 1576315997499048179}
+  - component: {fileID: 7822918911545926194}
+  - component: {fileID: 7083242403617287187}
   - component: {fileID: 3774583866627220945}
   - component: {fileID: 2688728872441815336}
   m_Layer: 0
@@ -370,7 +428,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4955475071061056570}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8845171954500246774
+--- !u!114 &7822918911545926194
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -413,7 +471,7 @@ MonoBehaviour:
       BarrelClipping: 0.25
       Anamorphism: 0
   BlendHint: 0
---- !u!114 &1576315997499048179
+--- !u!114 &7083242403617287187
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

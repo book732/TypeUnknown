@@ -423,7 +423,7 @@ public class Player : MonoBehaviour
         ActiveItem = ItemPoolManager.Instance.Get(item);
         ActiveItem.transform.SetPositionAndRotation(
          HandTransform.position,
-         HandTransform.rotation * ActiveItem.transform.rotation
+         HandTransform.rotation * item.ItemPrefab.transform.rotation
          );
 
         var collider = ActiveItem.GetComponent<Collider>();
