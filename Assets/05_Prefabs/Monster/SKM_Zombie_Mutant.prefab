@@ -1094,7 +1094,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4159049836417549146}
   - component: {fileID: 6252579307968240271}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: hand.r
   m_TagString: MonsterHand
   m_Icon: {fileID: 0}
@@ -1140,7 +1140,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.2
+  m_Radius: 0.1
   m_Center: {x: 0, y: 0.05, z: 0}
 --- !u!1 &4979185379528788627
 GameObject:
@@ -2261,7 +2261,7 @@ GameObject:
   m_Component:
   - component: {fileID: 97225158730025769}
   - component: {fileID: 3457755632832888454}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: hand.l
   m_TagString: MonsterHand
   m_Icon: {fileID: 0}
@@ -2307,7 +2307,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.2
+  m_Radius: 0.1
   m_Center: {x: 0, y: 0.05, z: 0}
 --- !u!1 &7913707897245954141
 GameObject:

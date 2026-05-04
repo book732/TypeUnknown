@@ -14,15 +14,19 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioClip _cantSprint;
     [SerializeField] private AudioClip _walkFootSound;
     [SerializeField] private AudioClip _runFootSound;
+    [SerializeField] private AudioClip _defaultSound;
+    
     private AudioSource _playerAudioSource;
     public Action PlayerDead;
-
     [SerializeField] private float _rotateSpeed;
+    
+    //player move
     private float _speed;
     private bool _isSprint;
     private float _usingStamina;
     private float _recoverStamina;
-    private bool _isCantSprint;
+    private PlayerState _playerState;
+
 
     //inventory settings
     private Rigidbody rb;
@@ -39,10 +43,10 @@ public class Player : MonoBehaviour
 
     //monster tag 
     private string _monsterHandTag;
-
+    private string _monster;
     //monster timer
     private float _timer = 0f;
-    private float _timer2 = 0f;
+
     //escape settings
     private int _escapeClickCount;
     private int _requiredEscapeClicks;
@@ -50,11 +54,14 @@ public class Player : MonoBehaviour
     [SerializeField] private CinemachineFollow _camera;
     [SerializeField] private GameObject _cameraPos;
     float timeElapsed = 0f;
-
+    private Transform _currMonsterTr;
+    
+    //monster
+    private KeyMonster _keyMonster;
     //escape screen settings 
     private Vector3 _baseCamera;
     private CinemachineImpulseSource _impulseSource;
-    private Vector3 _monsterPos;
+    private Vector3 _playerEscapeDir;
 
     //UI settings
     [SerializeField] InGameUIManager uIManager;
@@ -66,6 +73,7 @@ public class Player : MonoBehaviour
         inventoryUI.InitInventory(inventory);
         inventory.OnActiveInventorySlotchanged += GenerateAndInitializeActiveItem;
         _monsterHandTag = "MonsterHand";
+        _monster = "Monster";
         _camera = GetComponentInChildren<CinemachineFollow>();
         _baseCamera = _cameraPos.transform.localPosition;
         _playerAudioSource = GetComponent<AudioSource>();
@@ -81,7 +89,6 @@ public class Player : MonoBehaviour
         _mental = 100f;
         _recoverStamina = 30f;
         _speed = 5f;
-        _timer2 = 0f;
         _isPlayerStop = false;
         _escapeClickCount = 0;
         _requiredEscapeClicks = 10;
@@ -117,7 +124,6 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _timer2 += Time.fixedDeltaTime;
         if (_isPlayerStop)
         {
             _timer += Time.fixedDeltaTime;
@@ -141,12 +147,51 @@ public class Player : MonoBehaviour
             _playerAudioSource.clip = clip;
             _playerAudioSource.Play();
         }
+    } 
+    private void OffSound()
+    {
+        _playerAudioSource.Pause();
     }
 
+    #region PlayerSprint
     private IEnumerator PlayerSprint()
     {
         while (true)
         {
+            /*switch (_playerState)
+            {
+                case PlayerState.IDLE:
+                    _stamina += _recoverStamina * Time.deltaTime;
+                    _stamina = Mathf.Min(_stamina, 100f);
+                    break;
+                case PlayerState.WALK:
+                    _stamina += _recoverStamina * Time.deltaTime;
+                    _stamina = Mathf.Min(_stamina, 100f);
+                    _speed = 5f;
+                    ChangeSound(_walkFootSound);
+                    break;
+                case PlayerState.SPRINT:
+                    if (_stamina > 0f)
+                    {
+                        _stamina -= _usingStamina * Time.deltaTime;
+                        _stamina = Mathf.Max(_stamina, 0f);
+                        _speed = 10f;
+                        ChangeSound(_runFootSound);
+
+                        if (_stamina <= 0f)
+                        {
+                            _speed = 0.5f;
+                            ChangeSound(_cantSprint);
+                            yield return new WaitForSecondsRealtime(3.0f);
+                        }
+                    }
+                    break;
+                case PlayerState.DAMAGED
+                case PlayerState.DEAD:
+                    break;
+                
+            }*/
+            
             if (_isSprint && _stamina > 0f)
             {
                 _stamina -= _usingStamina * Time.deltaTime;
@@ -162,47 +207,48 @@ public class Player : MonoBehaviour
                 }
             }
             //!_isSprint || _stamina<=0
-            else
+            else 
             {
                 _stamina += _recoverStamina * Time.deltaTime;
                 _stamina = Mathf.Min(_stamina, 100f);
                 _speed = 5f;
                 ChangeSound(_walkFootSound);
             }
-
-            yield return new WaitForSeconds(0.003f);
+            yield return null;
         }
     }
 
-    private void Movement()
+    private void Sprint(bool _isRun)
     {
-        Vector3 moveForward = transform.forward * verticalInput;
-        Vector3 moveRight = transform.right * horizontalInput;
-        Vector3 moveDirection = (moveForward + moveRight).normalized;
-        Vector3 movement = moveDirection * _speed * Time.deltaTime;
-        rb.MovePosition(transform.position + movement);
+        _isSprint = _isRun;
+        if (_isSprint)
+        {
+            _playerState = PlayerState.SPRINT;
+        }
     }
 
-    private void PlayerRoation()
-    {
-        float mouseX = Input.GetAxis("Mouse X");
-        float turnAmount = mouseX * _rotateSpeed;
+    #endregion
 
-        Quaternion turnRotation = Quaternion.Euler(0, turnAmount, 0);
-        rb.MoveRotation(rb.rotation * turnRotation);
 
-    }
+
+
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag(_monsterHandTag) == true)
         {
             _isPlayerStop = true;
-            Debug.Log($"{other.transform.forward}");
             Vector3 forward = other.transform.forward;
             forward.y = 0;
             forward.Normalize();
-            _monsterPos = (forward * 3f) + this.transform.position;
+            _playerEscapeDir = (forward ) + this.transform.position;
+        } 
+        
+        if (other.CompareTag(_monster) == true)
+        {
+            _keyMonster = other.GetComponent<KeyMonster>();
+            _currMonsterTr = other.transform;
+            Debug.Log("monster is exist.");
         }
     }
     public void PlayerTakeDamage(float damage)
@@ -215,6 +261,7 @@ public class Player : MonoBehaviour
         }
     }
 
+    #region PlayerEscape
     private void TryEscape()
     {
         // 잡혀있는 상태가 아니면 무시
@@ -227,23 +274,78 @@ public class Player : MonoBehaviour
         if (_escapeClickCount >= _requiredEscapeClicks)
         {
             Debug.Log("탈출 성공!");
-            this.transform.position = _monsterPos;
-
+            _keyMonster.IsPlayerEscape(true); 
+            rb.AddForce(_playerEscapeDir);
             _camera.FollowOffset = _baseCamera;
             _isPlayerStop = false;
+            timeElapsed = 0f;
             _escapeClickCount = 0; // 카운트 초기화
             _timer = 0f;           // 데미지 타이머 초기화
+            _currMonsterTr = null;
         }
 
     }
-
     private void PlayerView()
     {
-        float t = timeElapsed / 0.5f;
-        _camera.FollowOffset = Vector3.Lerp(_baseCamera, new Vector3(0f, 0.88f, 0.21f), t);
+        float t = Mathf.Clamp01( timeElapsed / 0.5f);
+        _camera.FollowOffset = Vector3.Lerp(_baseCamera, new Vector3(0f, 2f, 0f), t);
+
+        if (_currMonsterTr != null)
+        {
+            Vector3 direction = (_currMonsterTr.position - transform.position).normalized;
+            direction.y = 0f;
+            if (direction != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(direction);
+                // Slerp를 사용해 부드럽게 몬스터 쪽으로 몸을 돌림
+                rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, Time.deltaTime * 5f));
+            }
+            
+        }
+
         timeElapsed += Time.deltaTime;
     }
+    
 
+    #endregion
+
+    #region Player move & rotaion
+    private void Movement()
+    {
+        if (verticalInput == 0 && horizontalInput == 0)
+        {
+            OffSound();
+        }
+        Vector3 moveForward = transform.forward * verticalInput;
+        Vector3 moveRight = transform.right * horizontalInput;
+        Vector3 moveDirection = (moveForward + moveRight).normalized;
+        Vector3 movement = moveDirection * _speed * Time.deltaTime;
+        rb.MovePosition(transform.position + movement);
+    }
+    
+    private void PlayerRoation()
+    {
+        float mouseX = Input.GetAxis("Mouse X");
+        float turnAmount = mouseX * _rotateSpeed;
+
+        Quaternion turnRotation = Quaternion.Euler(0, turnAmount, 0);
+        rb.MoveRotation(rb.rotation * turnRotation);
+
+    }
+    private void SetLook(Vector2 input)
+    {
+        _rotationInput = input.x * 0.1f;
+    }
+
+    private void SetMove(Vector2 input)
+    {
+        horizontalInput = input.x;
+        verticalInput = input.y;
+        //   Debug.Log("Move Event Received: " + input);
+    }
+    #endregion
+
+    #region PlayerItem
     public bool HasItem(string itemName)
     {
         return inventory.HasItem(itemName);
@@ -287,10 +389,6 @@ public class Player : MonoBehaviour
         Debug.Log("Interacted with item");
     }
 
-    private void Sprint(bool _isRun)
-    {
-        _isSprint = _isRun;
-    }
 
     private void Detectitem()
     {
@@ -302,23 +400,6 @@ public class Player : MonoBehaviour
             Debug.Log("Picked up: " + itemData.ItemName);
         }
     }
-
-    private void SetLook(Vector2 input)
-    {
-        _rotationInput = input.x * 0.1f;
-
-    }
-
-    private void SetMove(Vector2 input)
-    {
-        horizontalInput = input.x;
-        verticalInput = input.y;
-        //   Debug.Log("Move Event Received: " + input);
-    }
-
-
-
-
     private ItemData Existitem()
     {
         RaycastHit hit;
@@ -355,6 +436,10 @@ public class Player : MonoBehaviour
 
 
     }
+    
+
+    #endregion
+
 
     void OnDrawGizmos()
     {
