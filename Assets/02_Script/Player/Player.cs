@@ -66,7 +66,7 @@ public class Player : MonoBehaviour
     //escape screen settings 
     private Vector3 _baseCamera;
     private CinemachineImpulseSource _impulseSource;
-    private Vector3 _monsterPos;
+    //private Vector3 _monsterPos;
     private Vector3 _playerEscapeDir;
     //UI settings
     [SerializeField] InGameUIManager uIManager;
@@ -289,7 +289,7 @@ public class Player : MonoBehaviour
             Vector3 forward = other.transform.forward;
             forward.y = 0;
             forward.Normalize();
-            _monsterPos = (forward * 3f) + this.transform.position;
+            _playerEscapeDir = (forward * 1f) + this.transform.position;
         }
         
         if (other.CompareTag(_monster) == true)
