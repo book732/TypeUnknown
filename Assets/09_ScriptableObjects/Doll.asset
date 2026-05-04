@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Doll
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Doll
-  itemIcon: {fileID: 21300000, guid: 2ee243cf4bc0e3e4c8dab60b1b813c57, type: 3}
+  itemIcon: {fileID: 21300000, guid: 5c827a5680d9cc747a798dfe21ee632d, type: 3}
   itemAction: {fileID: 0}
   itemPrefab: {fileID: 2784940817253356461, guid: bfd4c1375fb33d54caaa816b82d4e7a3, type: 3}
   isConsumable: 0

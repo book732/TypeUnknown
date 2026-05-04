@@ -5,7 +5,7 @@ AssetOrigin:
   productId: 48529
   packageName: Flooded Grounds
   packageVersion: 1.1
-  assetPath: Assets/Flooded_Grounds/Prefabs/Nature/Trees/TreeCreator_Tall_B_Textures/diffuse.png
+  assetPath: Assets/Resources/Flooded_Grounds/Prefabs/Nature/Trees/TreeCreator_Tall_B_Textures/diffuse.png
   uploadId: 227274
 TextureImporter:
   internalIDToNameTable: []

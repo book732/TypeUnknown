@@ -199,6 +199,24 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OpenUI"",
+                    ""type"": ""Button"",
+                    ""id"": ""9114448b-e9aa-44b4-823f-52895136193b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""OpenInven"",
+                    ""type"": ""Button"",
+                    ""id"": ""3736199d-b41b-4ecd-a31a-7696444e89d8"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -652,6 +670,28 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""action"": ""Escape"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3ec390af-e7ce-4afb-8ee3-ec980692c94f"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""OpenUI"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ddff795b-825a-4875-a120-9414d878464e"",
+                    ""path"": ""<Keyboard>/i"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""OpenInven"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -672,7 +712,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""name"": ""Submit"",
                     ""type"": ""Button"",
                     ""id"": ""7607c7b6-cd76-4816-beef-bd0341cfe950"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -681,7 +721,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""name"": ""Cancel"",
                     ""type"": ""Button"",
                     ""id"": ""15cef263-9014-4fd5-94d9-4e4a6234a6ef"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -1249,6 +1289,8 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_ItemChange = m_Player.FindAction("ItemChange", throwIfNotFound: true);
         m_Player_Escape = m_Player.FindAction("Escape", throwIfNotFound: true);
+        m_Player_OpenUI = m_Player.FindAction("OpenUI", throwIfNotFound: true);
+        m_Player_OpenInven = m_Player.FindAction("OpenInven", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1354,6 +1396,8 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Interact;
     private readonly InputAction m_Player_ItemChange;
     private readonly InputAction m_Player_Escape;
+    private readonly InputAction m_Player_OpenUI;
+    private readonly InputAction m_Player_OpenInven;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1413,6 +1457,14 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Escape".
         /// </summary>
         public InputAction @Escape => m_Wrapper.m_Player_Escape;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/OpenUI".
+        /// </summary>
+        public InputAction @OpenUI => m_Wrapper.m_Player_OpenUI;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/OpenInven".
+        /// </summary>
+        public InputAction @OpenInven => m_Wrapper.m_Player_OpenInven;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1475,6 +1527,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Escape.started += instance.OnEscape;
             @Escape.performed += instance.OnEscape;
             @Escape.canceled += instance.OnEscape;
+            @OpenUI.started += instance.OnOpenUI;
+            @OpenUI.performed += instance.OnOpenUI;
+            @OpenUI.canceled += instance.OnOpenUI;
+            @OpenInven.started += instance.OnOpenInven;
+            @OpenInven.performed += instance.OnOpenInven;
+            @OpenInven.canceled += instance.OnOpenInven;
         }
 
         /// <summary>
@@ -1522,6 +1580,12 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @Escape.started -= instance.OnEscape;
             @Escape.performed -= instance.OnEscape;
             @Escape.canceled -= instance.OnEscape;
+            @OpenUI.started -= instance.OnOpenUI;
+            @OpenUI.performed -= instance.OnOpenUI;
+            @OpenUI.canceled -= instance.OnOpenUI;
+            @OpenInven.started -= instance.OnOpenInven;
+            @OpenInven.performed -= instance.OnOpenInven;
+            @OpenInven.canceled -= instance.OnOpenInven;
         }
 
         /// <summary>
@@ -1906,6 +1970,20 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnEscape(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "OpenUI" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOpenUI(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "OpenInven" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOpenInven(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

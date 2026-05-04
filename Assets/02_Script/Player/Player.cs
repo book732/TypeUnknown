@@ -3,6 +3,7 @@ using System.Collections;
 using Unity.Cinemachine;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Splines.Interpolators;
 
 
@@ -16,6 +17,8 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioClip _runFootSound;
     private AudioSource _playerAudioSource;
     public Action PlayerDead;
+    [SerializeField] private GameObject _inGameUI;
+    [SerializeField] private CanvasGroup _inventoryGroup;
 
     [SerializeField] private float _rotateSpeed;
     private float _speed;
@@ -71,7 +74,7 @@ public class Player : MonoBehaviour
         _baseCamera = _cameraPos.transform.localPosition;
         _playerAudioSource = GetComponent<AudioSource>();
         init();
-
+        HideInventory();
     }
 
     //리스폰시 초기화 작업 위해 카메라,오디오소스 등은 Awake함수로 이동.
@@ -102,8 +105,11 @@ public class Player : MonoBehaviour
         inputEventSO.SubscribeInteract(InteractItem);
         inputEventSO.SubscribeEscape(TryEscape);
         inputEventSO.SubscribeSprint(Sprint);
+        inputEventSO.SubscribeMenu(OpenUI);
+        inputEventSO.SubscribeInven(OpenInventory);
         StartCoroutine(PlayerSprint());
     }
+
 
     private void OnDisable()
     {
@@ -113,6 +119,8 @@ public class Player : MonoBehaviour
         inputEventSO.UnSubscribeInteract(InteractItem);
         inputEventSO.UnSubscribeEscape(TryEscape);
         inputEventSO.UnSubscribeSprint(Sprint);
+        inputEventSO.UnSubscribeMenu(OpenUI);
+        inputEventSO.UnSubscribeInven(OpenInventory);
         StopCoroutine(PlayerSprint());
     }
 
@@ -135,6 +143,44 @@ public class Player : MonoBehaviour
         PlayerRoation();
     }
 
+    private void OpenUI(bool _isPlayerOpenUI)
+    {
+        if (_isPlayerOpenUI)
+        {
+            _inGameUI.SetActive(true);
+        }
+        else
+        {
+            _inGameUI.SetActive(false);
+        }
+    }
+    
+    private void OpenInventory(bool _isPlayerOpenInven)
+    {
+        if (_isPlayerOpenInven)
+        {
+            ShowInventory();
+        }
+        else
+        {
+            HideInventory();
+        }
+    }
+
+    private void HideInventory()
+    {
+        _inventoryGroup.alpha = 0f;
+        _inventoryGroup.interactable = false;
+        _inventoryGroup.blocksRaycasts = false;
+    }
+
+    private void ShowInventory()
+    {
+        _inventoryGroup.alpha = 1f;
+        _inventoryGroup.interactable = true;
+        _inventoryGroup.blocksRaycasts = true;
+    }
+    
     private void ChangeSound(AudioClip clip)
     {
         if (_playerAudioSource.clip != clip)

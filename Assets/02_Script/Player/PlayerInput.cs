@@ -6,6 +6,8 @@ public class PlayerInput : MonoBehaviour
 {
     [SerializeField] private InputEventSO inputEventSO;
     private InputSystem_Actions inputActions;
+    private bool _isOpenUI;
+    private bool _isOpenInven;
 
     private void Awake()
     {
@@ -35,6 +37,26 @@ public class PlayerInput : MonoBehaviour
         }
     }
 
+    private void OpenUI(InputAction.CallbackContext context)
+    {
+        if (!context.performed)
+        {
+            return;
+        }
+        _isOpenUI = !_isOpenUI;
+        inputEventSO.RaiseMenuEvent(_isOpenUI);
+    }
+
+    private void OpenInven(InputAction.CallbackContext context)
+    {
+        if (!context.performed)
+        {
+            return;
+        }
+        _isOpenInven = !_isOpenInven;
+        inputEventSO.RaiseInvenEvent(_isOpenInven);
+    }
+    
     private void Look(InputAction.CallbackContext context)
     {
         Vector2 input = context.ReadValue<Vector2>();
@@ -84,10 +106,6 @@ public class PlayerInput : MonoBehaviour
         inputEventSO.RaiseMoveEvent(input);
     }
 
-    private void Update()
-    {
-
-    }
     private void OnEnable()
     {
         //키바인딩        
@@ -100,6 +118,8 @@ public class PlayerInput : MonoBehaviour
         BindAction(inputActions.Player.Crouch, Crouch);
         BindAction(inputActions.Player.ItemChange, ItemChange);
         BindAction(inputActions.Player.Escape, Escape);
+        BindAction(inputActions.Player.OpenUI, OpenUI);
+        BindAction(inputActions.Player.OpenInven, OpenInven);
     }
     private void OnDisable()
     {
@@ -110,6 +130,8 @@ public class PlayerInput : MonoBehaviour
         UnBindAction(inputActions.Player.Escape, Escape);
         UnBindAction(inputActions.Player.Sprint, Sprint);
         UnBindAction(inputActions.Player.Look, Look);
+        UnBindAction(inputActions.Player.OpenUI, OpenUI);
+        UnBindAction(inputActions.Player.OpenInven, OpenInven);
         inputActions.Player.Disable();
     }
 }
