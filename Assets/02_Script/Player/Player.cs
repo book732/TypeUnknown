@@ -3,6 +3,7 @@ using System.Collections;
 using Unity.Cinemachine;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Splines.Interpolators;
 
 
@@ -18,6 +19,9 @@ public class Player : MonoBehaviour
     
     private AudioSource _playerAudioSource;
     public Action PlayerDead;
+    [SerializeField] private GameObject _inGameUI;
+    [SerializeField] private CanvasGroup _inventoryGroup;
+
     [SerializeField] private float _rotateSpeed;
     
     //player move
@@ -35,10 +39,11 @@ public class Player : MonoBehaviour
     private float _rotationInput;
     private bool isNearItem = false;
     private Inventory inventory;
-    private GameObject ActiveItem;
+    private ItemPickup ActiveItem;
     [SerializeField] private InputEventSO inputEventSO;
     [SerializeField] private InventoryUI inventoryUI;
     [SerializeField] Transform HandTransform;
+    private ItemPickup exisitingItem;
 
 
     //monster tag 
@@ -61,8 +66,8 @@ public class Player : MonoBehaviour
     //escape screen settings 
     private Vector3 _baseCamera;
     private CinemachineImpulseSource _impulseSource;
+    private Vector3 _monsterPos;
     private Vector3 _playerEscapeDir;
-
     //UI settings
     [SerializeField] InGameUIManager uIManager;
     public event Action OnItemDetected;
@@ -78,7 +83,7 @@ public class Player : MonoBehaviour
         _baseCamera = _cameraPos.transform.localPosition;
         _playerAudioSource = GetComponent<AudioSource>();
         init();
-
+        HideInventory();
     }
 
     //리스폰시 초기화 작업 위해 카메라,오디오소스 등은 Awake함수로 이동.
@@ -104,21 +109,26 @@ public class Player : MonoBehaviour
     {
         inputEventSO.SubscribeLook(SetLook);
         inputEventSO.SubscribeMove(SetMove);
-        inputEventSO.SubscribePickup(Detectitem);
+        inputEventSO.SubscribePickup(ItemKeyClicked);
         inputEventSO.SubscribeInteract(InteractItem);
         inputEventSO.SubscribeEscape(TryEscape);
         inputEventSO.SubscribeSprint(Sprint);
+        inputEventSO.SubscribeMenu(OpenUI);
+        inputEventSO.SubscribeInven(OpenInventory);
         StartCoroutine(PlayerSprint());
     }
+
 
     private void OnDisable()
     {
         inputEventSO.UnSubscribeMove(SetLook);
         inputEventSO.UnSubscribeMove(SetMove);
-        inputEventSO.UnSubscribePickup(Detectitem);
+        inputEventSO.UnSubscribePickup(ItemKeyClicked);
         inputEventSO.UnSubscribeInteract(InteractItem);
         inputEventSO.UnSubscribeEscape(TryEscape);
         inputEventSO.UnSubscribeSprint(Sprint);
+        inputEventSO.UnSubscribeMenu(OpenUI);
+        inputEventSO.UnSubscribeInven(OpenInventory);
         StopCoroutine(PlayerSprint());
     }
 
@@ -140,6 +150,44 @@ public class Player : MonoBehaviour
         PlayerRoation();
     }
 
+    private void OpenUI(bool _isPlayerOpenUI)
+    {
+        if (_isPlayerOpenUI)
+        {
+            _inGameUI.SetActive(true);
+        }
+        else
+        {
+            _inGameUI.SetActive(false);
+        }
+    }
+    
+    private void OpenInventory(bool _isPlayerOpenInven)
+    {
+        if (_isPlayerOpenInven)
+        {
+            ShowInventory();
+        }
+        else
+        {
+            HideInventory();
+        }
+    }
+
+    private void HideInventory()
+    {
+        _inventoryGroup.alpha = 0f;
+        _inventoryGroup.interactable = false;
+        _inventoryGroup.blocksRaycasts = false;
+    }
+
+    private void ShowInventory()
+    {
+        _inventoryGroup.alpha = 1f;
+        _inventoryGroup.interactable = true;
+        _inventoryGroup.blocksRaycasts = true;
+    }
+    
     private void ChangeSound(AudioClip clip)
     {
         if (_playerAudioSource.clip != clip)
@@ -217,7 +265,6 @@ public class Player : MonoBehaviour
             yield return null;
         }
     }
-
     private void Sprint(bool _isRun)
     {
         _isSprint = _isRun;
@@ -238,11 +285,12 @@ public class Player : MonoBehaviour
         if (other.CompareTag(_monsterHandTag) == true)
         {
             _isPlayerStop = true;
+            
             Vector3 forward = other.transform.forward;
             forward.y = 0;
             forward.Normalize();
-            _playerEscapeDir = (forward ) + this.transform.position;
-        } 
+            _monsterPos = (forward * 3f) + this.transform.position;
+        }
         
         if (other.CompareTag(_monster) == true)
         {
@@ -285,6 +333,7 @@ public class Player : MonoBehaviour
         }
 
     }
+
     private void PlayerView()
     {
         float t = Mathf.Clamp01( timeElapsed / 0.5f);
@@ -351,13 +400,14 @@ public class Player : MonoBehaviour
         return inventory.HasItem(itemName);
     }
 
-    //TODO 매번생성하고없애서 성능낭비 심함 OBJECTPOOLING으로바꾸거나 이제같으면계속쓰느식으로 
+
     private void GenerateAndInitializeActiveItem(int activeslotIndex)
     {
-        //이전에생성한 아이템이있으면 destroy  하는 코드  같으면 그대로빠져나가고 
+        //이전에생성한 아이템이있으면 오브젝트풀에반환하고 이미반환해서반환할게없으면 스킵
         if (ActiveItem != null)
         {
-            Destroy(ActiveItem);
+            ItemPoolManager.Instance.Release(ActiveItem);
+            ActiveItem = null;
         }
         //인덱스번호에해당하는아이템data로 아이템생성및 이전아이템있으면 없애는코드 
 
@@ -366,13 +416,16 @@ public class Player : MonoBehaviour
         if (inventory.items[activeslotIndex] == null) return;
 
 
-        var item = inventory.items[activeslotIndex].ItemData.ItemPrefab;
+        var item = inventory.items[activeslotIndex].ItemData;
         if (item == null) return;
 
 
+        ActiveItem = ItemPoolManager.Instance.Get(item);
+        ActiveItem.transform.SetPositionAndRotation(
+         HandTransform.position,
+         HandTransform.rotation * ActiveItem.transform.rotation
+         );
 
-
-        ActiveItem = Instantiate(item, HandTransform.position, HandTransform.rotation * item.transform.rotation);
         var collider = ActiveItem.GetComponent<Collider>();
         if (collider != null)
         {
@@ -390,37 +443,43 @@ public class Player : MonoBehaviour
     }
 
 
-    private void Detectitem()
+    private void ItemKeyClicked()
     {
-        if (Existitem() != null)
+        if (exisitingItem != null)
         {
-            ItemData itemData = Existitem();
-            inventory.AddItem(new ItemInstance(itemData));
+            ItemPickup itemPickupData = exisitingItem;
+            inventory.AddItem(new ItemInstance(itemPickupData.itemData));
 
-            Debug.Log("Picked up: " + itemData.ItemName);
+            Debug.Log("Picked up: " + itemPickupData.itemData.ItemName);
+            ItemPoolManager.Instance.Release(itemPickupData);
         }
     }
-    private ItemData Existitem()
+    private void Update()
+    {
+        exisitingItem = Existitem();
+        ShowPickupUI();
+    }
+
+    private ItemPickup Existitem()
     {
         RaycastHit hit;
-        Vector3 startposition = transform.position;
+        Vector3 startposition = transform.position - transform.forward * 1f;
         Vector3 halfextension = new Vector3(1f, 1f, 1f);
         Vector3 direction = transform.forward;
         Quaternion rotation = transform.rotation;
-        float distance = 1f;
+        float distance = 2f;
 
-
-        if (Physics.BoxCast(transform.position, halfextension, direction, out hit, rotation, distance))
+        if (Physics.BoxCast(startposition, halfextension, direction, out hit, rotation, distance))
         {
 
 
-            //TODO 아이템방식수정할것 (현재는 E키입력이먼저인데  탐지먼저되게 그래야  UI가능함)
+
 
             if (hit.collider.CompareTag("Item"))
             {
-                ItemData itemData = hit.collider.GetComponent<ItemPickup>().itemData;
-                hit.collider.GetComponent<ItemPickup>().EatedItem();
-                return itemData;
+                ItemPickup itemPickupData = hit.collider.GetComponent<ItemPickup>();
+                return itemPickupData;
+
 
 
             }
@@ -439,15 +498,26 @@ public class Player : MonoBehaviour
     
 
     #endregion
-
+    
+    private void ShowPickupUI()
+    {
+        if (exisitingItem != null)
+        {
+            uIManager.OnPickUpUI(true);
+        }
+        else
+        {
+            uIManager.OnPickUpUI(false);
+        }
+    }
 
     void OnDrawGizmos()
     {
-        Vector3 center = transform.position;
+        Vector3 center = transform.position - transform.forward * 1f;
         Vector3 halfExtents = new Vector3(1f, 1f, 1f);
         Quaternion rot = transform.rotation;
         Vector3 dir = transform.forward;
-        float dist = 1f;
+        float dist = 2f;
 
 
         Gizmos.color = Color.red;

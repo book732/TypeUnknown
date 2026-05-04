@@ -8,33 +8,31 @@ public class InGameUIManager : MonoBehaviour
 {
     [SerializeField] private Button _quitButton;
     [SerializeField] private Button _settingButton;
-    [SerializeField] private Button _resumeButton;
     [SerializeField] private Slider _volumeSlider;
     [SerializeField] private GameObject _settingPanel;
     [SerializeField] private Button _quitMenuButton;
     [SerializeField] private Canvas _canvas;
+    [SerializeField] private GameObject _inGameUI;
     //Ãß°¡º»
     [SerializeField] private InventoryUI _inventoryUI;
     [SerializeField] private Image _itempickupImage;
-
-
+    
     private void OnEnable()
     {
         LoadVolume();
-        GameManager.Instance.PauseGame();
         _quitButton.onClick.AddListener(OnQuitButtonClick);
         _settingButton.onClick.AddListener(OnSettingsButtonClick);
-        _resumeButton.onClick.AddListener(OnResumeGameClick);
+        _inGameUI.SetActive(false);
         _settingPanel.SetActive(false);
         _volumeSlider.onValueChanged.AddListener(AudioManager.Instance.SetVolume);
         _quitMenuButton.onClick.AddListener(OnQuitMenuButtonClick);
+
     }
 
     private void OnDisable()
     {
         _quitButton.onClick.RemoveListener(OnQuitButtonClick);
         _settingButton.onClick.RemoveListener(OnSettingsButtonClick);
-        _resumeButton.onClick.RemoveListener(OnResumeGameClick);
         _volumeSlider.onValueChanged.RemoveListener(AudioManager.Instance.SetVolume);
         _quitMenuButton.onClick.RemoveListener(OnQuitMenuButtonClick);
     }
@@ -44,6 +42,11 @@ public class InGameUIManager : MonoBehaviour
         _settingPanel.SetActive(true);
     }
 
+    public void OnPickUpUI(bool isExisit)
+    {
+        _itempickupImage.gameObject.SetActive(isExisit);
+    }
+
     private void OnQuitButtonClick()
     {
         GameManager.Instance.QuitGame();
@@ -51,12 +54,6 @@ public class InGameUIManager : MonoBehaviour
     private void OnQuitMenuButtonClick()
     {
         _settingPanel.SetActive(false);
-    }
-
-    private void OnResumeGameClick()
-    {
-        SceneManager.UnloadSceneAsync("EscUI");
-        GameManager.Instance.ResumeGame();
     }
 
     private void LoadVolume()
