@@ -49,8 +49,8 @@ public class KeyMonster : BaseMonster
         ChangeState(MonsterState.IDLE);
         StartCoroutine(MonsterSetStateCo());
     }
-    
 
+    
     private IEnumerator MonsterSetStateCo()
     {
         while (true)
@@ -59,7 +59,7 @@ public class KeyMonster : BaseMonster
             switch (_monsterState)
             {
                 case MonsterState.IDLE:
-                    _waitTimer += 0.016f;
+                    _waitTimer += Time.deltaTime;
                     if (_waitTimer >= _idleWaitTime)
                     {
                         _navMeshAgent.SetDestination(SetMonsterDestination()); // 몬스터의 목적지 갱신 로직
@@ -93,7 +93,8 @@ public class KeyMonster : BaseMonster
             float dist = (_playerTransform.position - this.transform.position).sqrMagnitude;
             if (dist < _attackDist * _attackDist )
             {
-                    ChangeState(MonsterState.ATTACK);
+                //this.transform.LookAt(_playerTransform);
+                ChangeState(MonsterState.ATTACK);
 
             }
             else if (dist < _traceDist * _traceDist)

@@ -13,7 +13,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject _settingPanel;
     [SerializeField] private Slider _volumeSlider;
     [SerializeField] private Button _quitMenuButton;
-    
+
     private void OnEnable()
     {
         LoadVolume();
@@ -53,9 +53,9 @@ public class UIManager : MonoBehaviour
     {
         _settingPanel.SetActive(false);
     }
-    
+
     private void LoadVolume()
     {
-        _volumeSlider.value = PlayerPrefs.GetFloat("VOLUME",1f);
+        _volumeSlider.value = PlayerPrefs.GetFloat("VOLUME", 1f);
     }
 }

@@ -5,7 +5,7 @@ AssetOrigin:
   productId: 48529
   packageName: Flooded Grounds
   packageVersion: 1.1
-  assetPath: Assets/Flooded_Grounds/Prefabs/Nature/Trees/TreeCreator_Tall_A_Textures/normal_specular.png
+  assetPath: Assets/Resources/Flooded_Grounds/Prefabs/Nature/Trees/TreeCreator_Tall_A_Textures/normal_specular.png
   uploadId: 227274
 TextureImporter:
   internalIDToNameTable: []
