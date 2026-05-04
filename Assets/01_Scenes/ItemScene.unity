@@ -154,7 +154,7 @@ MonoBehaviour:
   _volumeSlider: {fileID: 0}
   _settingPanel: {fileID: 0}
   _quitMenuButton: {fileID: 0}
-  _canvas: {fileID: 0}
+  _canvas: {fileID: 1444911100}
   _inventoryUI: {fileID: 1811608249}
   _itempickupImage: {fileID: 737251444}
 --- !u!4 &167682375
@@ -552,6 +552,61 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 513331991}
   m_CullTransparentMesh: 1
+--- !u!1 &611600319
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 611600321}
+  - component: {fileID: 611600320}
+  m_Layer: 0
+  m_Name: ItemPoolManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &611600320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 611600319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cffde086f9e72b3468ab92a5ddaa61f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemPoolManager
+  poolDatas:
+  - data: {fileID: 11400000, guid: c61103c95a2c18e419e66441d00e3b81, type: 2}
+    prefab: {fileID: 5763674723450095621, guid: bfd4c1375fb33d54caaa816b82d4e7a3, type: 3}
+  - data: {fileID: 11400000, guid: ef32244dfe23cc1429882c4fa5d6e014, type: 2}
+    prefab: {fileID: 5267857481507191985, guid: 11aef18926c53d44e9fdab82cbd07b57, type: 3}
+  - data: {fileID: 11400000, guid: 988ad19bb93f18d4c96edf15a82414e3, type: 2}
+    prefab: {fileID: 6558014835628931147, guid: 0f04318d0b3d8a44394db5faf197e288, type: 3}
+  - data: {fileID: 11400000, guid: a769c124e816edd4a84ec9ed52f8e7fd, type: 2}
+    prefab: {fileID: 5164607004091976950, guid: 349c8651613c508468ef246f4f5a0072, type: 3}
+  - data: {fileID: 11400000, guid: 73615db6e203f3d4a9741899377ee313, type: 2}
+    prefab: {fileID: 3485845458567916092, guid: 9686f337cd8a8fd4eb700d94d902e18e, type: 3}
+--- !u!4 &611600321
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 611600319}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &720681927
 GameObject:
   m_ObjectHideFlags: 0
@@ -945,6 +1000,10 @@ PrefabInstance:
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 4805198508533627332, guid: de0a7bbaacc84ca41a7a0a14de93e19c, type: 3}
+      propertyPath: uIManager
+      value: 
+      objectReference: {fileID: 167682374}
+    - target: {fileID: 4805198508533627332, guid: de0a7bbaacc84ca41a7a0a14de93e19c, type: 3}
       propertyPath: inventoryUI
       value: 
       objectReference: {fileID: 1811608249}
@@ -1143,15 +1202,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8352885622552411594, guid: bfd4c1375fb33d54caaa816b82d4e7a3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.51
+      value: 0.95
       objectReference: {fileID: 0}
     - target: {fileID: 8352885622552411594, guid: bfd4c1375fb33d54caaa816b82d4e7a3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.029
+      value: 1.35
       objectReference: {fileID: 0}
     - target: {fileID: 8352885622552411594, guid: bfd4c1375fb33d54caaa816b82d4e7a3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.72
+      value: -0.41
       objectReference: {fileID: 0}
     - target: {fileID: 8352885622552411594, guid: bfd4c1375fb33d54caaa816b82d4e7a3, type: 3}
       propertyPath: m_LocalRotation.w
@@ -3221,3 +3280,4 @@ SceneRoots:
   - {fileID: 8818833798202923250}
   - {fileID: 1172829164073819854}
   - {fileID: 1071073200}
+  - {fileID: 611600321}

@@ -31,10 +31,11 @@ public class Player : MonoBehaviour
     private float _rotationInput;
     private bool isNearItem = false;
     private Inventory inventory;
-    private GameObject ActiveItem;
+    private ItemPickup ActiveItem;
     [SerializeField] private InputEventSO inputEventSO;
     [SerializeField] private InventoryUI inventoryUI;
     [SerializeField] Transform HandTransform;
+    private ItemPickup exisitingItem;
 
 
     //monster tag 
@@ -97,7 +98,7 @@ public class Player : MonoBehaviour
     {
         inputEventSO.SubscribeLook(SetLook);
         inputEventSO.SubscribeMove(SetMove);
-        inputEventSO.SubscribePickup(Detectitem);
+        inputEventSO.SubscribePickup(ItemKeyClicked);
         inputEventSO.SubscribeInteract(InteractItem);
         inputEventSO.SubscribeEscape(TryEscape);
         inputEventSO.SubscribeSprint(Sprint);
@@ -108,7 +109,7 @@ public class Player : MonoBehaviour
     {
         inputEventSO.UnSubscribeMove(SetLook);
         inputEventSO.UnSubscribeMove(SetMove);
-        inputEventSO.UnSubscribePickup(Detectitem);
+        inputEventSO.UnSubscribePickup(ItemKeyClicked);
         inputEventSO.UnSubscribeInteract(InteractItem);
         inputEventSO.UnSubscribeEscape(TryEscape);
         inputEventSO.UnSubscribeSprint(Sprint);
@@ -249,13 +250,14 @@ public class Player : MonoBehaviour
         return inventory.HasItem(itemName);
     }
 
-    //TODO 매번생성하고없애서 성능낭비 심함 OBJECTPOOLING으로바꾸거나 이제같으면계속쓰느식으로 
+
     private void GenerateAndInitializeActiveItem(int activeslotIndex)
     {
-        //이전에생성한 아이템이있으면 destroy  하는 코드  같으면 그대로빠져나가고 
+        //이전에생성한 아이템이있으면 오브젝트풀에반환하고 이미반환해서반환할게없으면 스킵
         if (ActiveItem != null)
         {
-            Destroy(ActiveItem);
+            ItemPoolManager.Instance.Release(ActiveItem);
+            ActiveItem = null;
         }
         //인덱스번호에해당하는아이템data로 아이템생성및 이전아이템있으면 없애는코드 
 
@@ -264,13 +266,16 @@ public class Player : MonoBehaviour
         if (inventory.items[activeslotIndex] == null) return;
 
 
-        var item = inventory.items[activeslotIndex].ItemData.ItemPrefab;
+        var item = inventory.items[activeslotIndex].ItemData;
         if (item == null) return;
 
 
+        ActiveItem = ItemPoolManager.Instance.Get(item);
+        ActiveItem.transform.SetPositionAndRotation(
+         HandTransform.position,
+         HandTransform.rotation * ActiveItem.transform.rotation
+         );
 
-
-        ActiveItem = Instantiate(item, HandTransform.position, HandTransform.rotation * item.transform.rotation);
         var collider = ActiveItem.GetComponent<Collider>();
         if (collider != null)
         {
@@ -292,14 +297,15 @@ public class Player : MonoBehaviour
         _isSprint = _isRun;
     }
 
-    private void Detectitem()
+    private void ItemKeyClicked()
     {
-        if (Existitem() != null)
+        if (exisitingItem != null)
         {
-            ItemData itemData = Existitem();
-            inventory.AddItem(new ItemInstance(itemData));
+            ItemPickup itemPickupData = exisitingItem;
+            inventory.AddItem(new ItemInstance(itemPickupData.itemData));
 
-            Debug.Log("Picked up: " + itemData.ItemName);
+            Debug.Log("Picked up: " + itemPickupData.itemData.ItemName);
+            ItemPoolManager.Instance.Release(itemPickupData);
         }
     }
 
@@ -317,29 +323,32 @@ public class Player : MonoBehaviour
     }
 
 
+    private void Update()
+    {
+        exisitingItem = Existitem();
+        ShowPickupUI();
+    }
 
-
-    private ItemData Existitem()
+    private ItemPickup Existitem()
     {
         RaycastHit hit;
-        Vector3 startposition = transform.position;
+        Vector3 startposition = transform.position - transform.forward * 1f;
         Vector3 halfextension = new Vector3(1f, 1f, 1f);
         Vector3 direction = transform.forward;
         Quaternion rotation = transform.rotation;
-        float distance = 1f;
+        float distance = 2f;
 
-
-        if (Physics.BoxCast(transform.position, halfextension, direction, out hit, rotation, distance))
+        if (Physics.BoxCast(startposition, halfextension, direction, out hit, rotation, distance))
         {
 
 
-            //TODO 아이템방식수정할것 (현재는 E키입력이먼저인데  탐지먼저되게 그래야  UI가능함)
+
 
             if (hit.collider.CompareTag("Item"))
             {
-                ItemData itemData = hit.collider.GetComponent<ItemPickup>().itemData;
-                hit.collider.GetComponent<ItemPickup>().EatedItem();
-                return itemData;
+                ItemPickup itemPickupData = hit.collider.GetComponent<ItemPickup>();
+                return itemPickupData;
+
 
 
             }
@@ -356,13 +365,29 @@ public class Player : MonoBehaviour
 
     }
 
+    private void ShowPickupUI()
+    {
+        if (exisitingItem != null)
+        {
+            uIManager.OnPickUpUI(true);
+        }
+        else
+        {
+            uIManager.OnPickUpUI(false);
+        }
+
+
+
+    }
+
+
     void OnDrawGizmos()
     {
-        Vector3 center = transform.position;
+        Vector3 center = transform.position - transform.forward * 1f;
         Vector3 halfExtents = new Vector3(1f, 1f, 1f);
         Quaternion rot = transform.rotation;
         Vector3 dir = transform.forward;
-        float dist = 1f;
+        float dist = 2f;
 
 
         Gizmos.color = Color.red;

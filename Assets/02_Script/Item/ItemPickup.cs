@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class ItemPickup : MonoBehaviour
@@ -10,10 +11,7 @@ public class ItemPickup : MonoBehaviour
 
     }
 
-    public void EatedItem()
-    {
 
-        Destroy(gameObject);
-    }
+
 }
 
