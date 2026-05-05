@@ -49,7 +49,7 @@ public class InGameUIManager : MonoBehaviour
 
     private void OnQuitButtonClick()
     {
-        GameManager.Instance.QuitGame();
+        SceneManager.LoadScene("Menu");
     }
     private void OnQuitMenuButtonClick()
     {

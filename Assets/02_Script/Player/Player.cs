@@ -16,13 +16,12 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioClip _walkFootSound;
     [SerializeField] private AudioClip _runFootSound;
     [SerializeField] private AudioClip _defaultSound;
-    
-    private AudioSource _playerAudioSource;
-    public Action PlayerDead;
     [SerializeField] private GameObject _inGameUI;
     [SerializeField] private CanvasGroup _inventoryGroup;
-
+    [SerializeField] private GameObject _deadUI;
     [SerializeField] private float _rotateSpeed;
+    private AudioSource _playerAudioSource;
+    public Action PlayerDead;
     
     //player move
     private float _speed;
@@ -30,7 +29,7 @@ public class Player : MonoBehaviour
     private float _usingStamina;
     private float _recoverStamina;
     private PlayerState _playerState;
-
+    private bool _isDead;
 
     //inventory settings
     private Rigidbody rb;
@@ -98,7 +97,7 @@ public class Player : MonoBehaviour
         _escapeClickCount = 0;
         _requiredEscapeClicks = 10;
         _rotateSpeed = 10f;
-
+        _isDead = false;
         _camera = GetComponentInChildren<CinemachineFollow>();
         _baseCamera = _cameraPos.transform.localPosition;
         _playerAudioSource = GetComponent<AudioSource>();
@@ -301,12 +300,26 @@ public class Player : MonoBehaviour
     }
     public void PlayerTakeDamage(float damage)
     {
+        if (_isDead)
+        {
+            return;
+        }
+        
         _mental -= damage;
-
         if (_mental <= 0)
         {
-            PlayerDead?.Invoke();
+            _isDead = true;
+            _inGameUI.SetActive(false);
+            _deadUI.SetActive(true);
+            StartCoroutine(PlayerDeadUIWait());
         }
+    }
+
+    private IEnumerator PlayerDeadUIWait()
+    {
+        yield return new WaitForSecondsRealtime(5f);
+        _deadUI.SetActive(false);
+        PlayerDead?.Invoke();
     }
 
     #region PlayerEscape
