@@ -12,24 +12,26 @@ public class Player : MonoBehaviour
 
     [SerializeField] private float _stamina; // mp 역할
     [SerializeField] private float _mental; // hp 역할
+    [SerializeField] private float _maxMental = 100f; //최대 hp역할 
     [SerializeField] private AudioClip _cantSprint;
     [SerializeField] private AudioClip _walkFootSound;
     [SerializeField] private AudioClip _runFootSound;
     [SerializeField] private AudioClip _defaultSound;
-    
+
     private AudioSource _playerAudioSource;
     public Action PlayerDead;
     [SerializeField] private GameObject _inGameUI;
     [SerializeField] private CanvasGroup _inventoryGroup;
 
     [SerializeField] private float _rotateSpeed;
-    
+
     //player move
     private float _speed;
     private bool _isSprint;
     private float _usingStamina;
     private float _recoverStamina;
     private PlayerState _playerState;
+    private bool isDead = false;
 
 
     //inventory settings
@@ -47,8 +49,8 @@ public class Player : MonoBehaviour
 
 
     //monster tag 
-    private string _monsterHandTag;
-    private string _monster;
+    private string _monsterHandTag = "MonsterHand";
+    private string _monster = "Monster";
     //monster timer
     private float _timer = 0f;
 
@@ -60,7 +62,7 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _cameraPos;
     float timeElapsed = 0f;
     private Transform _currMonsterTr;
-    
+
     //monster
     private KeyMonster _keyMonster;
     //escape screen settings 
@@ -69,29 +71,40 @@ public class Player : MonoBehaviour
     //private Vector3 _monsterPos;
     private Vector3 _playerEscapeDir;
     //UI settings
-    [SerializeField] InGameUIManager uIManager;
-    public event Action OnItemDetected;
+    [SerializeField] public InGameUIManager uIManager;
+    //HP settings
+    public event Action<float, float> OnHpchanged;
+
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         inventory = new Inventory();
         inventoryUI.InitInventory(inventory);
         inventory.OnActiveInventorySlotchanged += GenerateAndInitializeActiveItem;
-        _monsterHandTag = "MonsterHand";
-        _monster = "Monster";
         _camera = GetComponentInChildren<CinemachineFollow>();
         _baseCamera = _cameraPos.transform.localPosition;
         _playerAudioSource = GetComponent<AudioSource>();
         init();
         HideInventory();
+        inventory.OnslotChanged += HandleSlotChanged;
+    }
+
+    private void HandleSlotChanged(int activeitemindex, ItemInstance instance)
+    {
+        if (activeitemindex == inventory.ActiveIndex)
+        {
+            GenerateAndInitializeActiveItem(activeitemindex);
+        }
     }
 
     //리스폰시 초기화 작업 위해 카메라,오디오소스 등은 Awake함수로 이동.
     public void init()
     {
+        isDead = false;
         _usingStamina = 10f;
         _stamina = 100f;
-        _mental = 100f;
+        _mental = _maxMental;
         _recoverStamina = 30f;
         _speed = 5f;
         _isPlayerStop = false;
@@ -134,6 +147,15 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
+        //테스트용시간에따른 멘탈감소 코드 
+        _timer += Time.fixedDeltaTime;
+        if (_timer > 1f)
+        {
+            PlayerTakeDamage(5f);
+            _timer = 0f;
+        }
+
+
         if (_isPlayerStop)
         {
             _timer += Time.fixedDeltaTime;
@@ -150,6 +172,15 @@ public class Player : MonoBehaviour
         PlayerRoation();
     }
 
+    public void RestoreHealth(float value)
+    {
+        if (!isDead)
+        {
+            _mental = Mathf.Clamp(_mental + value, 0f, _maxMental);
+            OnHpchanged?.Invoke(_mental, _maxMental);
+        }
+    }
+
     private void OpenUI(bool _isPlayerOpenUI)
     {
         if (_isPlayerOpenUI)
@@ -161,7 +192,7 @@ public class Player : MonoBehaviour
             _inGameUI.SetActive(false);
         }
     }
-    
+
     private void OpenInventory(bool _isPlayerOpenInven)
     {
         if (_isPlayerOpenInven)
@@ -187,7 +218,7 @@ public class Player : MonoBehaviour
         _inventoryGroup.interactable = true;
         _inventoryGroup.blocksRaycasts = true;
     }
-    
+
     private void ChangeSound(AudioClip clip)
     {
         if (_playerAudioSource.clip != clip)
@@ -195,7 +226,7 @@ public class Player : MonoBehaviour
             _playerAudioSource.clip = clip;
             _playerAudioSource.Play();
         }
-    } 
+    }
     private void OffSound()
     {
         _playerAudioSource.Pause();
@@ -239,7 +270,7 @@ public class Player : MonoBehaviour
                     break;
                 
             }*/
-            
+
             if (_isSprint && _stamina > 0f)
             {
                 _stamina -= _usingStamina * Time.deltaTime;
@@ -255,7 +286,7 @@ public class Player : MonoBehaviour
                 }
             }
             //!_isSprint || _stamina<=0
-            else 
+            else
             {
                 _stamina += _recoverStamina * Time.deltaTime;
                 _stamina = Mathf.Min(_stamina, 100f);
@@ -285,13 +316,13 @@ public class Player : MonoBehaviour
         if (other.CompareTag(_monsterHandTag) == true)
         {
             _isPlayerStop = true;
-            
+
             Vector3 forward = other.transform.forward;
             forward.y = 0;
             forward.Normalize();
             _playerEscapeDir = (forward * 1f) + this.transform.position;
         }
-        
+
         if (other.CompareTag(_monster) == true)
         {
             _keyMonster = other.GetComponent<KeyMonster>();
@@ -301,11 +332,13 @@ public class Player : MonoBehaviour
     }
     public void PlayerTakeDamage(float damage)
     {
-        _mental -= damage;
+        _mental = Mathf.Clamp(_mental - damage, 0f, _maxMental);
+        OnHpchanged(_mental, _maxMental);
 
         if (_mental <= 0)
         {
             PlayerDead?.Invoke();
+            isDead = true;
         }
     }
 
@@ -322,7 +355,7 @@ public class Player : MonoBehaviour
         if (_escapeClickCount >= _requiredEscapeClicks)
         {
             Debug.Log("탈출 성공!");
-            _keyMonster.IsPlayerEscape(true); 
+            _keyMonster.IsPlayerEscape(true);
             rb.AddForce(_playerEscapeDir);
             _camera.FollowOffset = _baseCamera;
             _isPlayerStop = false;
@@ -336,7 +369,7 @@ public class Player : MonoBehaviour
 
     private void PlayerView()
     {
-        float t = Mathf.Clamp01( timeElapsed / 0.5f);
+        float t = Mathf.Clamp01(timeElapsed / 0.5f);
         _camera.FollowOffset = Vector3.Lerp(_baseCamera, new Vector3(0f, 2f, 0f), t);
 
         if (_currMonsterTr != null)
@@ -349,12 +382,12 @@ public class Player : MonoBehaviour
                 // Slerp를 사용해 부드럽게 몬스터 쪽으로 몸을 돌림
                 rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, Time.deltaTime * 5f));
             }
-            
+
         }
 
         timeElapsed += Time.deltaTime;
     }
-    
+
 
     #endregion
 
@@ -371,7 +404,7 @@ public class Player : MonoBehaviour
         Vector3 movement = moveDirection * _speed * Time.deltaTime;
         rb.MovePosition(transform.position + movement);
     }
-    
+
     private void PlayerRoation()
     {
         float mouseX = Input.GetAxis("Mouse X");
@@ -495,10 +528,10 @@ public class Player : MonoBehaviour
 
 
     }
-    
+
 
     #endregion
-    
+
     private void ShowPickupUI()
     {
         if (exisitingItem != null)

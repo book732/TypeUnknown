@@ -51,6 +51,12 @@ public class ItemPoolManager : MonoBehaviour, IDisposable
     {
         // 皋葛府 秦力贸府
         if (_isDisposed) return;
+
+        foreach (var pool in _pools.Values)
+        {
+            pool.Clear();
+        }
+
         _pools.Clear();
         _isDisposed = true;
     }
