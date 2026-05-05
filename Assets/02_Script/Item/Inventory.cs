@@ -35,8 +35,22 @@ public class Inventory
 
             if (items[activeIndex].ItemData.IsConsumable == true)
             {
-                //TODO
-                //아이템없애기 
+                //아이템 없어지고
+                //그걸ui에반영하기 
+                items[activeIndex].ItemCount--;
+
+                if (items[activeIndex].ItemCount <= 0)
+                {
+                    // 슬롯 비우기
+                    items[activeIndex] = null;
+                    OnslotChanged?.Invoke(activeIndex, null);
+                }
+                else
+                {
+                    OnslotChanged?.Invoke(activeIndex, items[activeIndex]);
+                }
+
+
             }
         }
 
