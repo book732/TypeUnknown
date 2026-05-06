@@ -35,7 +35,7 @@ public class Player : MonoBehaviour
 
     private bool _isDead;
 
-    
+
     //player moveSettings
     private Rigidbody _rb;
     private float _horizontalInput;
@@ -43,7 +43,7 @@ public class Player : MonoBehaviour
     private Vector2 _rotationInput;
     private float _verticalRotation;
     private float _horizontalRotation;
-    
+
     //inventory settings
     private bool isNearItem = false;
     private Inventory inventory;
@@ -385,8 +385,8 @@ public class Player : MonoBehaviour
         if (_escapeClickCount >= _requiredEscapeClicks)
         {
             Debug.Log("Å»Ãâ ¼º°ø!");
-            _keyMonster.IsPlayerEscape(true); 
-            _rb.AddForce(_playerEscapeDir , ForceMode.Impulse);
+            _keyMonster.IsPlayerEscape(true);
+            _rb.AddForce(_playerEscapeDir, ForceMode.Impulse);
             _camera.FollowOffset = _baseCamera;
             _isPlayerStop = false;
             timeElapsed = 0f;
@@ -399,7 +399,7 @@ public class Player : MonoBehaviour
 
     private void PlayerView()
     {
-        float t = Mathf.Clamp01( timeElapsed / 0.5f);
+        float t = Mathf.Clamp01(timeElapsed / 0.5f);
         _camera.FollowOffset = Vector3.Lerp(_baseCamera, new Vector3(0f, 2.5f, 0f), t);
 
         if (_currMonsterTr != null)
@@ -427,7 +427,7 @@ public class Player : MonoBehaviour
         {
             OffSound();
         }
-        else if(_verticalInput != 0 || _horizontalInput == 0)
+        else if (_verticalInput != 0 || _horizontalInput == 0)
         {
             if (_speed >= 4f && _speed <= 6f)
             {
@@ -441,7 +441,7 @@ public class Player : MonoBehaviour
         Vector3 movement = moveDirection * _speed * Time.deltaTime;
         _rb.MovePosition(transform.position + movement);
     }
-    
+
     private void PlayerXRoation()
     {
         float mouseX = _rotationInput.x;
@@ -461,7 +461,7 @@ public class Player : MonoBehaviour
             if (IsGrounded())
             {
                 Debug.Log("Á¡ÇÁ");
-                _rb.AddForce(Vector3.up * 5f,ForceMode.Impulse);
+                _rb.AddForce(Vector3.up * 5f, ForceMode.Impulse);
                 _isJump = false;
             }
         }
@@ -535,7 +535,7 @@ public class Player : MonoBehaviour
 
         ActiveItem = ItemPoolManager.Instance.Get(item);
 
-        //ActiveItem.TurnOffLightEffect();
+        ActiveItem.TurnOffLightEffect();
 
 
 
@@ -563,6 +563,7 @@ public class Player : MonoBehaviour
 
     private void ItemKeyClicked()
     {
+        Debug.Log("clicked");
         if (exisitingItem != null)
         {
             ItemPickup itemPickupData = exisitingItem;
