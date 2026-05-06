@@ -107,6 +107,7 @@ public class Player : MonoBehaviour
     //리스폰시 초기화 작업 위해 카메라,오디오소스 등은 Awake함수로 이동.
     public void init()
     {
+        uIManager.InnitMentalUI();
         _isDead = false;
         _usingStamina = 10f;
         _stamina = 100f;
@@ -340,7 +341,7 @@ public class Player : MonoBehaviour
             Vector3 forward = other.transform.forward;
             forward.y = 0;
             forward.Normalize();
-            _playerEscapeDir = forward * 2f;
+            _playerEscapeDir = forward * 3f;
         }
 
         if (other.CompareTag(_monster) == true)
@@ -385,7 +386,7 @@ public class Player : MonoBehaviour
         {
             Debug.Log("탈출 성공!");
             _keyMonster.IsPlayerEscape(true); 
-            _rb.AddForce(_playerEscapeDir);
+            _rb.AddForce(_playerEscapeDir , ForceMode.Impulse);
             _camera.FollowOffset = _baseCamera;
             _isPlayerStop = false;
             timeElapsed = 0f;
@@ -447,21 +448,11 @@ public class Player : MonoBehaviour
         float mouseY = _rotationInput.y;
         _horizontalRotation += mouseX * _rotateSpeed;
         _horizontalRotation %= 360f;
-        _verticalRotation -= mouseY * _rotateSpeed;
+        _verticalRotation -= mouseY * _rotateSpeed * 0.05f;
         _verticalRotation = Mathf.Clamp(_verticalRotation, -15f, 10f);
         Quaternion targetRotation = Quaternion.Euler(_verticalRotation, _horizontalRotation, 0);
         _rb.MoveRotation(targetRotation);
     }
-
-    /*private void PlayerYRotation()
-    {
-        float mouseY = _rotationInput.y;
-        _verticalRotation -= mouseY * _rotateSpeed;
-        
-        Quaternion turnRotation = Quaternion.Euler(_verticalRotation, 0, 0);
-        _rb.MoveRotation(_rb.rotation * turnRotation);
-
-    }*/
 
     private void PlayerJump()
     {
@@ -469,6 +460,7 @@ public class Player : MonoBehaviour
         {
             if (IsGrounded())
             {
+                Debug.Log("점프");
                 _rb.AddForce(Vector3.up * 5f,ForceMode.Impulse);
                 _isJump = false;
             }

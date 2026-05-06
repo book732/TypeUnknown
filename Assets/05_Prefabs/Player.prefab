@@ -171,7 +171,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.25
   m_Height: 4
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
@@ -229,6 +229,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Player
   _stamina: 0
   _mental: 0
+  _maxMental: 100
   _cantSprint: {fileID: 8300000, guid: 7caffa1c7dda8f941a538e7352ca46be, type: 3}
   _walkFootSound: {fileID: 8300000, guid: 2b2a881d883882e45acc4ffaa6176080, type: 3}
   _runFootSound: {fileID: 8300000, guid: 1d79e855755c9134c89a760309f77f3f, type: 3}
@@ -239,7 +240,7 @@ MonoBehaviour:
   _rotateSpeed: 0
   groundLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 2048
   inputEventSO: {fileID: 11400000, guid: cfa4c06143da9fd4e8b77fb3c37d15f2, type: 2}
   inventoryUI: {fileID: 0}
   HandTransform: {fileID: 1709404062562427610}
@@ -431,7 +432,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4955475071061056570}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -0.14, y: 0, z: 0}
 --- !u!114 &7822918911545926194
 MonoBehaviour:
   m_ObjectHideFlags: 0

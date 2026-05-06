@@ -65,6 +65,14 @@ public class InGameUIManager : MonoBehaviour
         _mentalImage.color = color;
     }
 
+    public void InnitMentalUI()
+    {
+        float alpha = 0f;
+        var color = _mentalImage.color;
+        color.a = alpha;
+        _mentalImage.color = color;
+    }
+
     private void OnEnable()
     {
         LoadVolume();

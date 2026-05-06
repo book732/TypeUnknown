@@ -30,8 +30,9 @@ public class GameManager : MonoBehaviour
     {
         if (_player != null)
         {
-            _player.transform.position = startPoint.transform.position;
-            _player.init();
+            SceneManager.LoadScene("Main");
+            /*_player.transform.position = startPoint.transform.position;
+            _player.init();*/
         }
     }
 
