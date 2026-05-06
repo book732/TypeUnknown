@@ -147,13 +147,13 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //테스트용시간에따른 멘탈감소 코드 
-        _timer += Time.fixedDeltaTime;
-        if (_timer > 1f)
-        {
-            PlayerTakeDamage(5f);
-            _timer = 0f;
-        }
+        /* //테스트용시간에따른 멘탈감소 코드 
+         _timer += Time.fixedDeltaTime;
+         if (_timer > 1f)
+         {
+             PlayerTakeDamage(5f);
+             _timer = 0f;
+         }*/
 
 
         if (_isPlayerStop)
@@ -436,6 +436,8 @@ public class Player : MonoBehaviour
 
     private void GenerateAndInitializeActiveItem(int activeslotIndex)
     {
+
+        Debug.Log("generated");
         //이전에생성한 아이템이있으면 오브젝트풀에반환하고 이미반환해서반환할게없으면 스킵
         if (ActiveItem != null)
         {
@@ -453,7 +455,13 @@ public class Player : MonoBehaviour
         if (item == null) return;
 
 
+
         ActiveItem = ItemPoolManager.Instance.Get(item);
+
+        //ActiveItem.TurnOffLightEffect();
+
+
+
         ActiveItem.transform.SetPositionAndRotation(
          HandTransform.position,
          HandTransform.rotation * item.ItemPrefab.transform.rotation

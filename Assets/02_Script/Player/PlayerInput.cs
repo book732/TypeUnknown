@@ -56,7 +56,7 @@ public class PlayerInput : MonoBehaviour
         _isOpenInven = !_isOpenInven;
         inputEventSO.RaiseInvenEvent(_isOpenInven);
     }
-    
+
     private void Look(InputAction.CallbackContext context)
     {
         Vector2 input = context.ReadValue<Vector2>();
@@ -67,7 +67,7 @@ public class PlayerInput : MonoBehaviour
     {
 
     }
-    
+
     private void Escape(InputAction.CallbackContext context)
     {
         inputEventSO.RaiseEscapeEvent();
@@ -77,6 +77,18 @@ public class PlayerInput : MonoBehaviour
     {
         action.performed += callback;
         action.canceled += callback;
+    }
+
+    void BindActionOnlyforPerformed(InputAction action, Action<InputAction.CallbackContext> callback)
+    {
+        action.performed += callback;
+
+    }
+
+    void UnBindActionOnlyforPerformed(InputAction action, Action<InputAction.CallbackContext> callback)
+    {
+        action.performed -= callback;
+
     }
 
     void UnBindAction(InputAction action, Action<InputAction.CallbackContext> callback)
@@ -111,7 +123,8 @@ public class PlayerInput : MonoBehaviour
         //키바인딩        
         BindAction(inputActions.Player.Move, OnMove);
         BindAction(inputActions.Player.Pick, GetItem);
-        BindAction(inputActions.Player.Interact, InteractItem);
+        //BindActionOnlyforPerformed(inputActions.Player.Pick, GetItem);
+        BindActionOnlyforPerformed(inputActions.Player.Interact, InteractItem);
         BindAction(inputActions.Player.Jump, Jump);
         BindAction(inputActions.Player.Look, Look);
         BindAction(inputActions.Player.Sprint, Sprint);
@@ -125,7 +138,8 @@ public class PlayerInput : MonoBehaviour
     {
         UnBindAction(inputActions.Player.Move, OnMove);
         UnBindAction(inputActions.Player.Pick, GetItem);
-        UnBindAction(inputActions.Player.Interact, InteractItem);
+        UnBindActionOnlyforPerformed(inputActions.Player.Interact, InteractItem);
+        //UnBindActionOnlyforPerformed(inputActions.Player.Pick, GetItem);
         UnBindAction(inputActions.Player.ItemChange, ItemChange);
         UnBindAction(inputActions.Player.Escape, Escape);
         UnBindAction(inputActions.Player.Sprint, Sprint);

@@ -68,6 +68,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemPickup
   itemData: {fileID: 11400000, guid: 73615db6e203f3d4a9741899377ee313, type: 2}
+  lightEffectprefab: {fileID: 7633341464050033732, guid: b71130098430ec94a8ddfc0a68332fa2, type: 3}
 --- !u!1 &6374979235512604493
 GameObject:
   m_ObjectHideFlags: 0
