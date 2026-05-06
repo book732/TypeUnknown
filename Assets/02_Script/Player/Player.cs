@@ -35,11 +35,16 @@ public class Player : MonoBehaviour
 
     private bool _isDead;
 
+    
+    //player moveSettings
+    private Rigidbody _rb;
+    private float _horizontalInput;
+    private float _verticalInput;
+    private Vector2 _rotationInput;
+    private float _verticalRotation;
+    private float _horizontalRotation;
+    
     //inventory settings
-    private Rigidbody rb;
-    private float horizontalInput;
-    private float verticalInput;
-    private float _rotationInput;
     private bool isNearItem = false;
     private Inventory inventory;
     private ItemPickup ActiveItem;
@@ -79,7 +84,7 @@ public class Player : MonoBehaviour
 
     void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+        _rb = GetComponent<Rigidbody>();
         inventory = new Inventory();
         inventoryUI.InitInventory(inventory);
         inventory.OnActiveInventorySlotchanged += GenerateAndInitializeActiveItem;
@@ -112,7 +117,7 @@ public class Player : MonoBehaviour
         _escapeClickCount = 0;
         _requiredEscapeClicks = 10;
         _rotateSpeed = 10f;
-
+        _verticalRotation = 0f;
         _camera = GetComponentInChildren<CinemachineFollow>();
         _baseCamera = _cameraPos.transform.localPosition;
         _playerAudioSource = GetComponent<AudioSource>();
@@ -172,7 +177,8 @@ public class Player : MonoBehaviour
             return;
         }
         Movement();
-        PlayerRoation();
+        PlayerXRoation();
+        //PlayerYRotation();
         PlayerJump();
     }
 
@@ -378,8 +384,8 @@ public class Player : MonoBehaviour
         if (_escapeClickCount >= _requiredEscapeClicks)
         {
             Debug.Log("탈출 성공!");
-            _keyMonster.IsPlayerEscape(true);
-            rb.AddForce(_playerEscapeDir);
+            _keyMonster.IsPlayerEscape(true); 
+            _rb.AddForce(_playerEscapeDir);
             _camera.FollowOffset = _baseCamera;
             _isPlayerStop = false;
             timeElapsed = 0f;
@@ -392,8 +398,8 @@ public class Player : MonoBehaviour
 
     private void PlayerView()
     {
-        float t = Mathf.Clamp01(timeElapsed / 0.5f);
-        _camera.FollowOffset = Vector3.Lerp(_baseCamera, new Vector3(0f, 2f, 0f), t);
+        float t = Mathf.Clamp01( timeElapsed / 0.5f);
+        _camera.FollowOffset = Vector3.Lerp(_baseCamera, new Vector3(0f, 2.5f, 0f), t);
 
         if (_currMonsterTr != null)
         {
@@ -403,7 +409,7 @@ public class Player : MonoBehaviour
             {
                 Quaternion targetRotation = Quaternion.LookRotation(direction);
                 // Slerp를 사용해 부드럽게 몬스터 쪽으로 몸을 돌림
-                rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, Time.deltaTime * 5f));
+                _rb.MoveRotation(Quaternion.Slerp(_rb.rotation, targetRotation, Time.deltaTime * 5f));
             }
 
         }
@@ -416,11 +422,11 @@ public class Player : MonoBehaviour
     #region Player move & rotaion & Jump
     private void Movement()
     {
-        if (verticalInput == 0 && horizontalInput == 0)
+        if (_verticalInput == 0 && _horizontalInput == 0)
         {
             OffSound();
         }
-        else if (verticalInput != 0 || horizontalInput == 0)
+        else if(_verticalInput != 0 || _horizontalInput == 0)
         {
             if (_speed >= 4f && _speed <= 6f)
             {
@@ -428,21 +434,34 @@ public class Player : MonoBehaviour
                 ChangeSound(_walkFootSound);
             }
         }
-        Vector3 moveForward = transform.forward * verticalInput;
-        Vector3 moveRight = transform.right * horizontalInput;
+        Vector3 moveForward = transform.forward * _verticalInput;
+        Vector3 moveRight = transform.right * _horizontalInput;
         Vector3 moveDirection = (moveForward + moveRight).normalized;
         Vector3 movement = moveDirection * _speed * Time.deltaTime;
-        rb.MovePosition(transform.position + movement);
+        _rb.MovePosition(transform.position + movement);
     }
-
-    private void PlayerRoation()
+    
+    private void PlayerXRoation()
     {
-        float mouseX = Input.GetAxis("Mouse X");
-        float turnAmount = mouseX * _rotateSpeed;
-
-        Quaternion turnRotation = Quaternion.Euler(0, turnAmount, 0);
-        rb.MoveRotation(rb.rotation * turnRotation);
+        float mouseX = _rotationInput.x;
+        float mouseY = _rotationInput.y;
+        _horizontalRotation += mouseX * _rotateSpeed;
+        _horizontalRotation %= 360f;
+        _verticalRotation -= mouseY * _rotateSpeed;
+        _verticalRotation = Mathf.Clamp(_verticalRotation, -15f, 10f);
+        Quaternion targetRotation = Quaternion.Euler(_verticalRotation, _horizontalRotation, 0);
+        _rb.MoveRotation(targetRotation);
     }
+
+    /*private void PlayerYRotation()
+    {
+        float mouseY = _rotationInput.y;
+        _verticalRotation -= mouseY * _rotateSpeed;
+        
+        Quaternion turnRotation = Quaternion.Euler(_verticalRotation, 0, 0);
+        _rb.MoveRotation(_rb.rotation * turnRotation);
+
+    }*/
 
     private void PlayerJump()
     {
@@ -450,7 +469,7 @@ public class Player : MonoBehaviour
         {
             if (IsGrounded())
             {
-                rb.AddForce(Vector3.up * 5f, ForceMode.Impulse);
+                _rb.AddForce(Vector3.up * 5f,ForceMode.Impulse);
                 _isJump = false;
             }
         }
@@ -481,13 +500,14 @@ public class Player : MonoBehaviour
 
     private void SetLook(Vector2 input)
     {
-        _rotationInput = input.x * 0.1f;
+        _rotationInput.x = input.x * 0.1f;
+        _rotationInput.y = input.y * 0.1f;
     }
 
     private void SetMove(Vector2 input)
     {
-        horizontalInput = input.x;
-        verticalInput = input.y;
+        _horizontalInput = input.x;
+        _verticalInput = input.y;
         //   Debug.Log("Move Event Received: " + input);
     }
     #endregion

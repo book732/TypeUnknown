@@ -59,11 +59,8 @@ public class PlayerInput : MonoBehaviour
 
     private void Look(InputAction.CallbackContext context)
     {
-        if (context.performed)
-        {
             Vector2 input = context.ReadValue<Vector2>();
             inputEventSO.RaiseLookEvent(input);
-        }
     }
 
     private void Jump(InputAction.CallbackContext context)
