@@ -8,26 +8,27 @@ public class Hint : MonoBehaviour
     [SerializeField] private TMP_Text _textHint;
     [SerializeField] private TMP_Text _textWayHint;
     [SerializeField][TextArea] private string[] _hint;
-    [SerializeField] [TextArea] private string[] _wayHint;
-    
+    [SerializeField][TextArea] private string[] _wayHint;
+    [SerializeField] int _hintIndex = 0;
+
     private void Awake()
     {
         _panelHint.SetActive(false);
     }
 
-    public void ShowHint(int number)
+    public void ShowHint()
     {
         _panelHint.SetActive(true);
-        _textHint.text = _hint[number];
-        if (number == 0)
+        _textHint.text = _hint[_hintIndex];
+        if (_hintIndex == 0)
         {
             _textWayHint.text = _wayHint[0];
         }
-        else if (number == 1)
+        else if (_hintIndex == 1)
         {
             _textWayHint.text = _wayHint[1];
         }
-        else if (number == 2)
+        else if (_hintIndex == 2)
         {
             _textWayHint.text = _wayHint[2];
         }
@@ -35,6 +36,9 @@ public class Hint : MonoBehaviour
         {
             _textWayHint.text = _wayHint[3];
         }
+
+        _hintIndex++;
+
     }
 
     public void CloseHint()

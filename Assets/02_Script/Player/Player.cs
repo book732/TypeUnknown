@@ -21,9 +21,12 @@ public class Player : MonoBehaviour
     [SerializeField] private CanvasGroup _inventoryGroup;
     [SerializeField] private GameObject _deadUI;
     [SerializeField] private float _rotateSpeed;
+    [SerializeField] private AudioSource _hitAudioSource;
+    [SerializeField] private AudioSource _openInventoryAudioSource;
+    [SerializeField] private AudioSource _healAudioSource;
     private AudioSource _playerAudioSource;
     public Action PlayerDead;
-
+    
     //player move & jump
 
     private bool isMoving;
@@ -34,7 +37,6 @@ public class Player : MonoBehaviour
     private PlayerState _playerState;
     private bool _isJump = false;
     [SerializeField] private LayerMask groundLayer;
-
     private bool _isDead;
 
     
@@ -45,7 +47,7 @@ public class Player : MonoBehaviour
     private Vector2 _rotationInput;
     private float _verticalRotation;
     private float _horizontalRotation;
-    
+
     //inventory settings
     private bool isNearItem = false;
     private Inventory inventory;
@@ -138,6 +140,7 @@ public class Player : MonoBehaviour
         inputEventSO.SubscribeSprint(Sprint);
         inputEventSO.SubscribeMenu(OpenUI);
         inputEventSO.SubscribeInven(OpenInventory);
+        GameManager.OnGameOver += StopPlayerAudio;
         StartCoroutine(PlayerSprint());
     }
 
@@ -153,9 +156,10 @@ public class Player : MonoBehaviour
         inputEventSO.UnSubscribeSprint(Sprint);
         inputEventSO.UnSubscribeMenu(OpenUI);
         inputEventSO.UnSubscribeInven(OpenInventory);
+        GameManager.OnGameOver -= StopPlayerAudio;
         StopCoroutine(PlayerSprint());
     }
-
+    
     private void FixedUpdate()
     {
         /* //테스트용시간에따른 멘탈감소 코드 
@@ -192,6 +196,7 @@ public class Player : MonoBehaviour
             _mental = Mathf.Clamp(_mental + value, 0f, _maxMental);
             OnHpchanged?.Invoke(_mental, _maxMental);
         }
+        _healAudioSource.Play();
     }
 
     private void OpenUI(bool _isPlayerOpenUI)
@@ -210,10 +215,12 @@ public class Player : MonoBehaviour
     {
         if (_isPlayerOpenInven)
         {
+            _openInventoryAudioSource.PlayOneShot(_openInventoryAudioSource.clip);
             ShowInventory();
         }
         else
         {
+            _openInventoryAudioSource.PlayOneShot(_openInventoryAudioSource.clip);
             HideInventory();
         }
     }
@@ -351,6 +358,7 @@ public class Player : MonoBehaviour
     {
         if (other.CompareTag(_monsterHandTag) == true)
         {
+            OffSound();
             _isPlayerStop = true;
             Vector3 forward = other.transform.forward;
             forward.y = 0;
@@ -369,14 +377,22 @@ public class Player : MonoBehaviour
     {
         _mental = Mathf.Clamp(_mental - damage, 0f, _maxMental);
         OnHpchanged(_mental, _maxMental);
+        _hitAudioSource.PlayOneShot(_hitAudioSource.clip);
 
         if (_mental <= 0)
         {
             _isDead = true;
+            GameManager.Instance.GameOver();
             _inGameUI.SetActive(false);
             _deadUI.SetActive(true);
             StartCoroutine(PlayerDeadUIWait());
         }
+    }
+    
+    private void StopPlayerAudio()
+    {
+        _playerAudioSource.Stop();
+        _hitAudioSource.Stop();
     }
 
     private IEnumerator PlayerDeadUIWait()
@@ -399,6 +415,7 @@ public class Player : MonoBehaviour
         if (_escapeClickCount >= _requiredEscapeClicks)
         {
             Debug.Log("탈출 성공!");
+            OnSound();
             _keyMonster.IsPlayerEscape(true); 
             _rb.AddForce(_playerEscapeDir , ForceMode.Impulse);
             _camera.FollowOffset = _baseCamera;
@@ -413,7 +430,7 @@ public class Player : MonoBehaviour
 
     private void PlayerView()
     {
-        float t = Mathf.Clamp01( timeElapsed / 0.5f);
+        float t = Mathf.Clamp01(timeElapsed / 0.5f);
         _camera.FollowOffset = Vector3.Lerp(_baseCamera, new Vector3(0f, 2.5f, 0f), t);
 
         if (_currMonsterTr != null)
@@ -537,7 +554,7 @@ public class Player : MonoBehaviour
 
         ActiveItem = ItemPoolManager.Instance.Get(item);
 
-        //ActiveItem.TurnOffLightEffect();
+        ActiveItem.TurnOffLightEffect();
 
 
 
@@ -565,6 +582,7 @@ public class Player : MonoBehaviour
 
     private void ItemKeyClicked()
     {
+        Debug.Log("clicked");
         if (exisitingItem != null)
         {
             ItemPickup itemPickupData = exisitingItem;

@@ -10,7 +10,6 @@ public class HealAction : ItemAction
     public override void Execute(GameObject user)
     {
         var player = user.GetComponent<Player>();
-
         player.RestoreHealth(healAmount);
     }
 

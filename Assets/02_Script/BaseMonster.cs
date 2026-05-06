@@ -9,10 +9,10 @@ public class BaseMonster : MonoBehaviour
     [SerializeField] protected float _walkSpeed = 0;
     [SerializeField] protected float _runSpeed = 0;
     [SerializeField] protected Transform _playerTransform;
-    
+    [SerializeField] protected Player _player;
     [SerializeField] protected float _traceDist = 0;
     [SerializeField] protected float _attackDist = 0;
-    
+    protected bool _playerDead;
     protected WaitForSeconds _ws;
 
     

@@ -5,9 +5,11 @@ public class Door : MonoBehaviour
 {
     private Rigidbody _rb;
     private bool _isOpen;
+    private AudioSource _openDoorSound;
     private void Awake()
     {
         _rb =GetComponent<Rigidbody>();
+        _openDoorSound = GetComponent<AudioSource>();
     }
 
     private void FixedUpdate()
@@ -15,6 +17,7 @@ public class Door : MonoBehaviour
         //if key를 가지고있음이 확인 되어 true
         if (_isOpen)
         {
+            _openDoorSound.PlayOneShot(_openDoorSound.clip);
             MoveDoor();
         }
         else
