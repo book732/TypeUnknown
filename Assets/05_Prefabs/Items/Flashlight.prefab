@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5741576511814851327}
   - component: {fileID: 5267857481507191985}
   - component: {fileID: 2802654820988491060}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Flashlight
   m_TagString: Item
   m_Icon: {fileID: 0}
@@ -165,7 +165,7 @@ GameObject:
   - component: {fileID: 1929306114805486697}
   - component: {fileID: 5309970476644476653}
   - component: {fileID: 8428366987757734645}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: WhiteLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -26,7 +26,7 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioSource _healAudioSource;
     private AudioSource _playerAudioSource;
     public Action PlayerDead;
-    
+
     //player move & jump
 
     private bool isMoving;
@@ -39,7 +39,7 @@ public class Player : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     private bool _isDead;
 
-    
+
     //player moveSettings
     private Rigidbody _rb;
     private float _horizontalInput;
@@ -159,7 +159,7 @@ public class Player : MonoBehaviour
         GameManager.OnGameOver -= StopPlayerAudio;
         StopCoroutine(PlayerSprint());
     }
-    
+
     private void FixedUpdate()
     {
         /* //테스트용시간에따른 멘탈감소 코드 
@@ -270,7 +270,7 @@ public class Player : MonoBehaviour
         }
         else if (!isMoving && !_isSprint)
         {
-             _playerState = PlayerState.IDLE;
+            _playerState = PlayerState.IDLE;
         }
     }
 
@@ -342,7 +342,7 @@ public class Player : MonoBehaviour
             yield return null;
         }
     }
-    
+
     private void Sprint(bool _isRun)
     {
         _isSprint = _isRun;
@@ -388,7 +388,7 @@ public class Player : MonoBehaviour
             StartCoroutine(PlayerDeadUIWait());
         }
     }
-    
+
     private void StopPlayerAudio()
     {
         _playerAudioSource.Stop();
@@ -415,7 +415,7 @@ public class Player : MonoBehaviour
         {
             OnSound();
             _keyMonster.IsPlayerEscape(true);
-            _rb.AddForce(_playerEscapeDir , ForceMode.Impulse);
+            _rb.AddForce(_playerEscapeDir, ForceMode.Impulse);
             _camera.FollowOffset = _baseCamera;
             _isPlayerStop = false;
             timeElapsed = 0f;
@@ -459,7 +459,7 @@ public class Player : MonoBehaviour
         Vector3 movement = moveDirection * _speed * Time.deltaTime;
         _rb.MovePosition(transform.position + movement);
     }
-    
+
     private void PlayerRoation()
     {
         float mouseX = _rotationInput.x;
@@ -478,7 +478,7 @@ public class Player : MonoBehaviour
         {
             if (IsGrounded())
             {
-                _rb.AddForce(Vector3.up * 5f,ForceMode.Impulse);
+                _rb.AddForce(Vector3.up * 5f, ForceMode.Impulse);
                 _isJump = false;
             }
         }
@@ -604,25 +604,12 @@ public class Player : MonoBehaviour
         Vector3 direction = transform.forward;
         Quaternion rotation = transform.rotation;
         float distance = 2f;
-
-        if (Physics.BoxCast(startposition, halfextension, direction, out hit, rotation, distance))
+        int itemLayerMask = LayerMask.GetMask("item");
+        if (Physics.BoxCast(startposition, halfextension, direction, out hit, rotation, distance, itemLayerMask))
         {
+            ItemPickup itemPickupData = hit.collider.GetComponent<ItemPickup>();
+            return itemPickupData;
 
-
-
-
-            if (hit.collider.CompareTag("Item"))
-            {
-                ItemPickup itemPickupData = hit.collider.GetComponent<ItemPickup>();
-                return itemPickupData;
-
-
-
-            }
-            else
-            {
-                return null;
-            }
         }
         else
         {
