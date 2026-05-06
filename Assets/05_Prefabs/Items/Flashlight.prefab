@@ -132,6 +132,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemPickup
   itemData: {fileID: 11400000, guid: ef32244dfe23cc1429882c4fa5d6e014, type: 2}
+  lightEffectprefab: {fileID: 7633341464050033732, guid: b71130098430ec94a8ddfc0a68332fa2, type: 3}
 --- !u!65 &2802654820988491060
 BoxCollider:
   m_ObjectHideFlags: 0

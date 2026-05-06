@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.ProBuilder.MeshOperations;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -13,10 +14,65 @@ public class InGameUIManager : MonoBehaviour
     [SerializeField] private Button _quitMenuButton;
     [SerializeField] private Canvas _canvas;
     [SerializeField] private GameObject _inGameUI;
+
     //Ãß°¡º»
+    [SerializeField] private Player _player;
+    [SerializeField] private Image _mapUI;
     [SerializeField] private InventoryUI _inventoryUI;
     [SerializeField] private Image _itempickupImage;
-    
+    [SerializeField] private Image _mentalImage;
+
+    private void Awake()
+    {
+        _player.OnHpchanged += UpdateMentalUI;
+
+    }
+
+    private void UpdateMentalUI(float mental, float maxMental)
+    {
+
+        float percent = mental / maxMental;
+        float alpha = 0f;
+
+        if (percent >= 1f)
+        {
+            alpha = 1f;
+        }
+        else if (percent >= 0.8f)
+        {
+            alpha = 55f;
+        }
+        else if (percent >= 0.6f)
+        {
+            alpha = 110f;
+        }
+        else if (percent >= 0.4f)
+        {
+            alpha = 165f;
+        }
+        else if (percent >= 0.2f)
+        {
+            alpha = 220f;
+        }
+        else
+        {
+            alpha = 220f;
+        }
+        //¾ËÆÄ°ª ¸¶Áö¸·¿¡ 255³ª´²Áà¾ßµÊ 
+        alpha = alpha / 255f;
+        var color = _mentalImage.color;
+        color.a = alpha;
+        _mentalImage.color = color;
+    }
+
+    public void InnitMentalUI()
+    {
+        float alpha = 0f;
+        var color = _mentalImage.color;
+        color.a = alpha;
+        _mentalImage.color = color;
+    }
+
     private void OnEnable()
     {
         LoadVolume();
@@ -45,6 +101,16 @@ public class InGameUIManager : MonoBehaviour
     public void OnPickUpUI(bool isExisit)
     {
         _itempickupImage.gameObject.SetActive(isExisit);
+    }
+
+    public void OnMapUI(bool isopend)
+    {
+        SetUIActive(_mapUI.gameObject, isopend);
+    }
+
+    public void SetUIActive(GameObject target, bool isActive)
+    {
+        target.SetActive(isActive);
     }
 
     private void OnQuitButtonClick()

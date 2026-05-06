@@ -118,12 +118,12 @@ public class InventoryUI : MonoBehaviour
         var slot = inventorySlots[index];
         Color itemColor = slot.itemIcon.color;
         Color textColor = slot.itemCount.color;
-        
+
         if (itemInstance == null)
         {
             itemColor.a = 0f;
             textColor.a = 0f;
-            
+
             slot.itemIcon.color = itemColor;
             slot.itemCount.color = textColor;
             slot.itemIcon.sprite = null;

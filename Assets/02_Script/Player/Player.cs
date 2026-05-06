@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
 
     [SerializeField] private float _stamina; // mp 역할
     [SerializeField] private float _mental; // hp 역할
+    [SerializeField] private float _maxMental = 100f; //최대 hp역할 
     [SerializeField] private AudioClip _cantSprint;
     [SerializeField] private AudioClip _walkFootSound;
     [SerializeField] private AudioClip _runFootSound;
@@ -22,7 +23,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float _rotateSpeed;
     private AudioSource _playerAudioSource;
     public Action PlayerDead;
-    
+
     //player move & jump
     private float _speed;
     private bool _isSprint;
@@ -31,14 +32,19 @@ public class Player : MonoBehaviour
     private PlayerState _playerState;
     private bool _isJump = false;
     [SerializeField] private LayerMask groundLayer;
-    
+
     private bool _isDead;
 
+    
+    //player moveSettings
+    private Rigidbody _rb;
+    private float _horizontalInput;
+    private float _verticalInput;
+    private Vector2 _rotationInput;
+    private float _verticalRotation;
+    private float _horizontalRotation;
+    
     //inventory settings
-    private Rigidbody rb;
-    private float horizontalInput;
-    private float verticalInput;
-    private float _rotationInput;
     private bool isNearItem = false;
     private Inventory inventory;
     private ItemPickup ActiveItem;
@@ -49,8 +55,8 @@ public class Player : MonoBehaviour
 
 
     //monster tag 
-    private string _monsterHandTag;
-    private string _monster;
+    private string _monsterHandTag = "MonsterHand";
+    private string _monster = "Monster";
     //monster timer
     private float _timer = 0f;
 
@@ -62,7 +68,7 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _cameraPos;
     float timeElapsed = 0f;
     private Transform _currMonsterTr;
-    
+
     //monster
     private KeyMonster _keyMonster;
     //escape screen settings 
@@ -71,36 +77,48 @@ public class Player : MonoBehaviour
     //private Vector3 _monsterPos;
     private Vector3 _playerEscapeDir;
     //UI settings
-    [SerializeField] InGameUIManager uIManager;
-    public event Action OnItemDetected;
+    [SerializeField] public InGameUIManager uIManager;
+    //HP settings
+    public event Action<float, float> OnHpchanged;
+
+
     void Awake()
     {
-        rb = GetComponent<Rigidbody>();
+        _rb = GetComponent<Rigidbody>();
         inventory = new Inventory();
         inventoryUI.InitInventory(inventory);
         inventory.OnActiveInventorySlotchanged += GenerateAndInitializeActiveItem;
-        _monsterHandTag = "MonsterHand";
-        _monster = "Monster";
         _camera = GetComponentInChildren<CinemachineFollow>();
         _baseCamera = _cameraPos.transform.localPosition;
         _playerAudioSource = GetComponent<AudioSource>();
         init();
         HideInventory();
+        inventory.OnslotChanged += HandleSlotChanged;
+    }
+
+    private void HandleSlotChanged(int activeitemindex, ItemInstance instance)
+    {
+        if (activeitemindex == inventory.ActiveIndex)
+        {
+            GenerateAndInitializeActiveItem(activeitemindex);
+        }
     }
 
     //리스폰시 초기화 작업 위해 카메라,오디오소스 등은 Awake함수로 이동.
     public void init()
     {
+        uIManager.InnitMentalUI();
+        _isDead = false;
         _usingStamina = 10f;
         _stamina = 100f;
-        _mental = 100f;
+        _mental = _maxMental;
         _recoverStamina = 30f;
         _speed = 5f;
         _isPlayerStop = false;
         _escapeClickCount = 0;
         _requiredEscapeClicks = 10;
         _rotateSpeed = 10f;
-        _isDead = false;
+        _verticalRotation = 0f;
         _camera = GetComponentInChildren<CinemachineFollow>();
         _baseCamera = _cameraPos.transform.localPosition;
         _playerAudioSource = GetComponent<AudioSource>();
@@ -138,6 +156,15 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
+        /* //테스트용시간에따른 멘탈감소 코드 
+         _timer += Time.fixedDeltaTime;
+         if (_timer > 1f)
+         {
+             PlayerTakeDamage(5f);
+             _timer = 0f;
+         }*/
+
+
         if (_isPlayerStop)
         {
             _timer += Time.fixedDeltaTime;
@@ -151,8 +178,18 @@ public class Player : MonoBehaviour
             return;
         }
         Movement();
-        PlayerRoation();
+        PlayerXRoation();
+        //PlayerYRotation();
         PlayerJump();
+    }
+
+    public void RestoreHealth(float value)
+    {
+        if (!_isDead)
+        {
+            _mental = Mathf.Clamp(_mental + value, 0f, _maxMental);
+            OnHpchanged?.Invoke(_mental, _maxMental);
+        }
     }
 
     private void OpenUI(bool _isPlayerOpenUI)
@@ -166,7 +203,7 @@ public class Player : MonoBehaviour
             _inGameUI.SetActive(false);
         }
     }
-    
+
     private void OpenInventory(bool _isPlayerOpenInven)
     {
         if (_isPlayerOpenInven)
@@ -192,7 +229,7 @@ public class Player : MonoBehaviour
         _inventoryGroup.interactable = true;
         _inventoryGroup.blocksRaycasts = true;
     }
-    
+
     private void ChangeSound(AudioClip clip)
     {
         if (_playerAudioSource.clip != clip)
@@ -200,7 +237,7 @@ public class Player : MonoBehaviour
             _playerAudioSource.clip = clip;
             _playerAudioSource.Play();
         }
-    } 
+    }
     private void OffSound()
     {
         _playerAudioSource.Pause();
@@ -248,7 +285,7 @@ public class Player : MonoBehaviour
                 case PlayerState.DAMAGED:
                 case PlayerState.DEAD:
                     break;
-                
+
             }
             /*
             if (_isSprint && _stamina > 0f)
@@ -266,7 +303,7 @@ public class Player : MonoBehaviour
                 }
             }
             //!_isSprint || _stamina<=0
-            else 
+            else
             {
                 _stamina += _recoverStamina * Time.deltaTime;
                 _stamina = Mathf.Min(_stamina, 100f);
@@ -304,9 +341,9 @@ public class Player : MonoBehaviour
             Vector3 forward = other.transform.forward;
             forward.y = 0;
             forward.Normalize();
-            _playerEscapeDir = forward * 2f ;
+            _playerEscapeDir = forward * 3f;
         }
-        
+
         if (other.CompareTag(_monster) == true)
         {
             _keyMonster = other.GetComponent<KeyMonster>();
@@ -316,12 +353,8 @@ public class Player : MonoBehaviour
     }
     public void PlayerTakeDamage(float damage)
     {
-        if (_isDead)
-        {
-            return;
-        }
-        
-        _mental -= damage;
+        _mental = Mathf.Clamp(_mental - damage, 0f, _maxMental);
+        OnHpchanged(_mental, _maxMental);
 
         if (_mental <= 0)
         {
@@ -353,7 +386,7 @@ public class Player : MonoBehaviour
         {
             Debug.Log("탈출 성공!");
             _keyMonster.IsPlayerEscape(true); 
-            rb.AddForce(_playerEscapeDir);
+            _rb.AddForce(_playerEscapeDir , ForceMode.Impulse);
             _camera.FollowOffset = _baseCamera;
             _isPlayerStop = false;
             timeElapsed = 0f;
@@ -367,7 +400,7 @@ public class Player : MonoBehaviour
     private void PlayerView()
     {
         float t = Mathf.Clamp01( timeElapsed / 0.5f);
-        _camera.FollowOffset = Vector3.Lerp(_baseCamera, new Vector3(0f, 2f, 0f), t);
+        _camera.FollowOffset = Vector3.Lerp(_baseCamera, new Vector3(0f, 2.5f, 0f), t);
 
         if (_currMonsterTr != null)
         {
@@ -377,24 +410,24 @@ public class Player : MonoBehaviour
             {
                 Quaternion targetRotation = Quaternion.LookRotation(direction);
                 // Slerp를 사용해 부드럽게 몬스터 쪽으로 몸을 돌림
-                rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, Time.deltaTime * 5f));
+                _rb.MoveRotation(Quaternion.Slerp(_rb.rotation, targetRotation, Time.deltaTime * 5f));
             }
-            
+
         }
         timeElapsed += Time.deltaTime;
     }
-    
+
 
     #endregion
 
     #region Player move & rotaion & Jump
     private void Movement()
     {
-        if (verticalInput == 0 && horizontalInput == 0)
+        if (_verticalInput == 0 && _horizontalInput == 0)
         {
             OffSound();
         }
-        else if(verticalInput != 0 || horizontalInput == 0)
+        else if(_verticalInput != 0 || _horizontalInput == 0)
         {
             if (_speed >= 4f && _speed <= 6f)
             {
@@ -402,20 +435,23 @@ public class Player : MonoBehaviour
                 ChangeSound(_walkFootSound);
             }
         }
-        Vector3 moveForward = transform.forward * verticalInput;
-        Vector3 moveRight = transform.right * horizontalInput;
+        Vector3 moveForward = transform.forward * _verticalInput;
+        Vector3 moveRight = transform.right * _horizontalInput;
         Vector3 moveDirection = (moveForward + moveRight).normalized;
         Vector3 movement = moveDirection * _speed * Time.deltaTime;
-        rb.MovePosition(transform.position + movement);
+        _rb.MovePosition(transform.position + movement);
     }
     
-    private void PlayerRoation()
+    private void PlayerXRoation()
     {
-        float mouseX = Input.GetAxis("Mouse X");
-        float turnAmount = mouseX * _rotateSpeed;
-
-        Quaternion turnRotation = Quaternion.Euler(0, turnAmount, 0);
-        rb.MoveRotation(rb.rotation * turnRotation);
+        float mouseX = _rotationInput.x;
+        float mouseY = _rotationInput.y;
+        _horizontalRotation += mouseX * _rotateSpeed;
+        _horizontalRotation %= 360f;
+        _verticalRotation -= mouseY * _rotateSpeed * 0.05f;
+        _verticalRotation = Mathf.Clamp(_verticalRotation, -15f, 10f);
+        Quaternion targetRotation = Quaternion.Euler(_verticalRotation, _horizontalRotation, 0);
+        _rb.MoveRotation(targetRotation);
     }
 
     private void PlayerJump()
@@ -424,7 +460,8 @@ public class Player : MonoBehaviour
         {
             if (IsGrounded())
             {
-                rb.AddForce(Vector3.up * 5f,ForceMode.Impulse);
+                Debug.Log("점프");
+                _rb.AddForce(Vector3.up * 5f,ForceMode.Impulse);
                 _isJump = false;
             }
         }
@@ -438,9 +475,9 @@ public class Player : MonoBehaviour
         // 캐릭터의 반지름만큼 구체를 아래로 쏴서 체크
         return Physics.CheckSphere(transform.position + Vector3.down * 0.9f, 0.2f, groundLayer);
     }
-    
-    
-    
+
+
+
     private void SetJump(bool jump)
     {
         if (_isJump == jump)
@@ -452,16 +489,17 @@ public class Player : MonoBehaviour
             _isJump = jump;
         }
     }
-    
+
     private void SetLook(Vector2 input)
     {
-        _rotationInput = input.x * 0.1f;
+        _rotationInput.x = input.x * 0.1f;
+        _rotationInput.y = input.y * 0.1f;
     }
 
     private void SetMove(Vector2 input)
     {
-        horizontalInput = input.x;
-        verticalInput = input.y;
+        _horizontalInput = input.x;
+        _verticalInput = input.y;
         //   Debug.Log("Move Event Received: " + input);
     }
     #endregion
@@ -475,6 +513,8 @@ public class Player : MonoBehaviour
 
     private void GenerateAndInitializeActiveItem(int activeslotIndex)
     {
+
+        Debug.Log("generated");
         //이전에생성한 아이템이있으면 오브젝트풀에반환하고 이미반환해서반환할게없으면 스킵
         if (ActiveItem != null)
         {
@@ -492,7 +532,13 @@ public class Player : MonoBehaviour
         if (item == null) return;
 
 
+
         ActiveItem = ItemPoolManager.Instance.Get(item);
+
+        //ActiveItem.TurnOffLightEffect();
+
+
+
         ActiveItem.transform.SetPositionAndRotation(
          HandTransform.position,
          HandTransform.rotation * item.ItemPrefab.transform.rotation
@@ -567,10 +613,10 @@ public class Player : MonoBehaviour
 
 
     }
-    
+
 
     #endregion
-    
+
     private void ShowPickupUI()
     {
         if (exisitingItem != null)
@@ -605,8 +651,8 @@ public class Player : MonoBehaviour
 
         Gizmos.color = Color.yellow;
         Gizmos.DrawLine(center, endCenter);
-        
-        
+
+
         // 바닥충돌 확인용
         Gizmos.color = IsGrounded() ? Color.green : Color.red;
         Gizmos.DrawWireSphere(transform.position + Vector3.down * 0.9f, 0.2f);
