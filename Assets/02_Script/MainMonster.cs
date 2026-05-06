@@ -76,6 +76,7 @@ public class MainMonster : BaseMonster
                     break;
                 case global::MonsterState.TRACERUN:
                     _navMeshAgent.isStopped = false;
+                    
                     _navMeshAgent.SetDestination(_playerTransform.position);
                     _animator.SetBool(hashIsAttack,false);
                     _animator.SetTrigger(hashFindPlayer);

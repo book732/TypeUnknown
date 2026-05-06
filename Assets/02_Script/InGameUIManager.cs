@@ -26,6 +26,7 @@ public class InGameUIManager : MonoBehaviour
         _settingPanel.SetActive(false);
         _volumeSlider.onValueChanged.AddListener(AudioManager.Instance.SetVolume);
         _quitMenuButton.onClick.AddListener(OnQuitMenuButtonClick);
+
     }
 
     private void OnDisable()
@@ -41,9 +42,14 @@ public class InGameUIManager : MonoBehaviour
         _settingPanel.SetActive(true);
     }
 
+    public void OnPickUpUI(bool isExisit)
+    {
+        _itempickupImage.gameObject.SetActive(isExisit);
+    }
+
     private void OnQuitButtonClick()
     {
-        GameManager.Instance.QuitGame();
+        SceneManager.LoadScene("Menu");
     }
     private void OnQuitMenuButtonClick()
     {

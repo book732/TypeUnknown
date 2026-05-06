@@ -6,17 +6,35 @@ public class InputEventSO : ScriptableObject
 {
     //리스너 목록
     public Action<Vector2> OnMove;
-    public Action OnJump;
     public Action<Vector2> OnLook;
     public Action OnPickup;
     public Action OnInteract;
     public Action<Vector2> OnChangeItem;
     public Action OnEscape;
+    public Action<bool> OnJump;
     public Action<bool> OnSprint;
     public Action<bool> OnOpenMenu;
     public Action<bool> OnOpenInven;
 
 
+    #region 점프
+    public void SubscribeJump(Action<bool> listener)
+    {
+        OnJump += listener;
+    }
+
+    public void UnSubscribeJump(Action<bool> listener)
+    {
+        OnJump -= listener;
+    }
+
+    public void RaiseJumpEvent(bool  _isJump)
+    {
+        OnJump?.Invoke(_isJump);
+        //  Debug.Log("Move Event Raised: " + input);
+    }
+    #endregion
+    
     #region 탈출
     public void SubscribeEscape(Action listener)
     {
