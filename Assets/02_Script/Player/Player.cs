@@ -25,6 +25,8 @@ public class Player : MonoBehaviour
     public Action PlayerDead;
 
     //player move & jump
+
+    private bool isMoving;
     private float _speed;
     private bool _isSprint;
     private float _usingStamina;
@@ -178,8 +180,8 @@ public class Player : MonoBehaviour
             return;
         }
         Movement();
-        PlayerXRoation();
-        //PlayerYRotation();
+        PlayerRoation();
+        PlayerSetState();
         PlayerJump();
     }
 
@@ -249,6 +251,22 @@ public class Player : MonoBehaviour
         _playerAudioSource.Play();
     }
 
+    private void PlayerSetState()
+    {
+        if (_isSprint)
+        {
+            _playerState = PlayerState.SPRINT;
+        }
+        else if (isMoving)
+        {
+            _playerState = PlayerState.WALK;
+        }
+        else if (!isMoving && !_isSprint)
+        {
+             _playerState = PlayerState.IDLE;
+        }
+    }
+
     #region PlayerSprint
     private IEnumerator PlayerSprint()
     {
@@ -259,16 +277,19 @@ public class Player : MonoBehaviour
                 case PlayerState.IDLE:
                     _stamina += _recoverStamina * Time.deltaTime;
                     _stamina = Mathf.Min(_stamina, 100f);
+                    OffSound();
                     break;
                 case PlayerState.WALK:
                     _stamina += _recoverStamina * Time.deltaTime;
                     _stamina = Mathf.Min(_stamina, 100f);
                     _speed = 5f;
+                    OnSound();
                     ChangeSound(_walkFootSound);
                     break;
                 case PlayerState.SPRINT:
                     if (_stamina > 0f)
                     {
+                        OnSound();
                         _stamina -= _usingStamina * Time.deltaTime;
                         _stamina = Mathf.Max(_stamina, 0f);
                         _speed = 10f;
@@ -314,17 +335,10 @@ public class Player : MonoBehaviour
             yield return null;
         }
     }
+    
     private void Sprint(bool _isRun)
     {
         _isSprint = _isRun;
-        if (_isSprint)
-        {
-            _playerState = PlayerState.SPRINT;
-        }
-        else
-        {
-            _playerState = PlayerState.WALK;
-        }
     }
 
     #endregion
@@ -423,18 +437,7 @@ public class Player : MonoBehaviour
     #region Player move & rotaion & Jump
     private void Movement()
     {
-        if (_verticalInput == 0 && _horizontalInput == 0)
-        {
-            OffSound();
-        }
-        else if(_verticalInput != 0 || _horizontalInput == 0)
-        {
-            if (_speed >= 4f && _speed <= 6f)
-            {
-                OnSound();
-                ChangeSound(_walkFootSound);
-            }
-        }
+        isMoving = _verticalInput != 0 || _horizontalInput != 0;
         Vector3 moveForward = transform.forward * _verticalInput;
         Vector3 moveRight = transform.right * _horizontalInput;
         Vector3 moveDirection = (moveForward + moveRight).normalized;
@@ -442,7 +445,7 @@ public class Player : MonoBehaviour
         _rb.MovePosition(transform.position + movement);
     }
     
-    private void PlayerXRoation()
+    private void PlayerRoation()
     {
         float mouseX = _rotationInput.x;
         float mouseY = _rotationInput.y;
@@ -460,7 +463,6 @@ public class Player : MonoBehaviour
         {
             if (IsGrounded())
             {
-                Debug.Log("Á¡ÇÁ");
                 _rb.AddForce(Vector3.up * 5f,ForceMode.Impulse);
                 _isJump = false;
             }
