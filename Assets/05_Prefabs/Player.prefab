@@ -230,12 +230,16 @@ MonoBehaviour:
   _stamina: 0
   _mental: 0
   _cantSprint: {fileID: 8300000, guid: 7caffa1c7dda8f941a538e7352ca46be, type: 3}
-  _walkFootSound: {fileID: 8300000, guid: c25427e68d9487b41b2094c0ade669fc, type: 3}
-  _runFootSound: {fileID: 8300000, guid: 9acb25e556561744cb4e84a47a42126a, type: 3}
+  _walkFootSound: {fileID: 8300000, guid: 2b2a881d883882e45acc4ffaa6176080, type: 3}
+  _runFootSound: {fileID: 8300000, guid: 1d79e855755c9134c89a760309f77f3f, type: 3}
   _defaultSound: {fileID: 0}
   _inGameUI: {fileID: 0}
   _inventoryGroup: {fileID: 0}
+  _deadUI: {fileID: 0}
   _rotateSpeed: 0
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 0
   inputEventSO: {fileID: 11400000, guid: cfa4c06143da9fd4e8b77fb3c37d15f2, type: 2}
   inventoryUI: {fileID: 0}
   HandTransform: {fileID: 1709404062562427610}
