@@ -203,10 +203,12 @@ public class Player : MonoBehaviour
     {
         if (_isPlayerOpenUI)
         {
+            GameManager.Instance.PauseGame();
             _inGameUI.SetActive(true);
         }
         else
         {
+            GameManager.Instance.ResumeGame();
             _inGameUI.SetActive(false);
         }
     }

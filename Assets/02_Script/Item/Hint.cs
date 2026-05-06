@@ -16,7 +16,7 @@ public class Hint : MonoBehaviour
         _panelHint.SetActive(false);
     }
 
-    public void ShowHint()
+    public void ShowHint(int _hintIndex)
     {
         _panelHint.SetActive(true);
         _textHint.text = _hint[_hintIndex];
@@ -36,9 +36,6 @@ public class Hint : MonoBehaviour
         {
             _textWayHint.text = _wayHint[3];
         }
-
-        _hintIndex++;
-
     }
 
     public void CloseHint()
