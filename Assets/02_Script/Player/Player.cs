@@ -118,7 +118,7 @@ public class Player : MonoBehaviour
         _speed = 5f;
         _isPlayerStop = false;
         _escapeClickCount = 0;
-        _requiredEscapeClicks = 10;
+        _requiredEscapeClicks = 5;
         _rotateSpeed = 10f;
         _verticalRotation = 0f;
         _camera = GetComponentInChildren<CinemachineFollow>();
@@ -242,7 +242,7 @@ public class Player : MonoBehaviour
     }
     private void OffSound()
     {
-        _playerAudioSource.Pause();
+        _playerAudioSource.Stop();
     }
 
     private void OnSound()
@@ -351,6 +351,7 @@ public class Player : MonoBehaviour
     {
         if (other.CompareTag(_monsterHandTag) == true)
         {
+            OffSound();
             _isPlayerStop = true;
             Vector3 forward = other.transform.forward;
             forward.y = 0;
@@ -393,13 +394,12 @@ public class Player : MonoBehaviour
         if (!_isPlayerStop) return;
 
         _escapeClickCount++;
-        Debug.Log($"Å»Ãâ ½Ãµµ Áß! ({_escapeClickCount} / {_requiredEscapeClicks})");
         _impulseSource.GenerateImpulse();
         // ¿ä±¸ È½¼ö¸¦ Ã¤¿ì¸é Å»Ãâ ¼º°ø
         if (_escapeClickCount >= _requiredEscapeClicks)
         {
-            Debug.Log("Å»Ãâ ¼º°ø!");
-            _keyMonster.IsPlayerEscape(true); 
+            OnSound();
+            _keyMonster.IsPlayerEscape(true);
             _rb.AddForce(_playerEscapeDir , ForceMode.Impulse);
             _camera.FollowOffset = _baseCamera;
             _isPlayerStop = false;
@@ -452,7 +452,7 @@ public class Player : MonoBehaviour
         _horizontalRotation += mouseX * _rotateSpeed;
         _horizontalRotation %= 360f;
         _verticalRotation -= mouseY * _rotateSpeed * 0.05f;
-        _verticalRotation = Mathf.Clamp(_verticalRotation, -15f, 10f);
+        _verticalRotation = Mathf.Clamp(_verticalRotation, -10f, 15f);
         Quaternion targetRotation = Quaternion.Euler(_verticalRotation, _horizontalRotation, 0);
         _rb.MoveRotation(targetRotation);
     }

@@ -1258,6 +1258,8 @@ MonoBehaviour:
   _attackClip: {fileID: 8300000, guid: bca0237fb9012e84eb2537c76e4326a7, type: 3}
   _mainClip: {fileID: 8300000, guid: b911662f2b94547e8a834cff9d26a788, type: 3}
   walkstopDistance: 0
+  _monsterHandLeftCollider: {fileID: 3457755632832888454}
+  _monsterHandRightCollider: {fileID: 6252579307968240271}
 --- !u!195 &6438973647056188473
 NavMeshAgent:
   m_ObjectHideFlags: 0

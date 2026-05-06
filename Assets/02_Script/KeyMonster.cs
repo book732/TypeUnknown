@@ -27,7 +27,8 @@ public class KeyMonster : BaseMonster
     private float _attackTime;
     
     private bool _isPlayerEscape;
-    private Collider _monsterHandCollider;
+    [SerializeField] private Collider _monsterHandLeftCollider;
+    [SerializeField] private Collider _monsterHandRightCollider;
     
     // target has in navmesh
     private bool isTargetSafe = false;
@@ -49,21 +50,21 @@ public class KeyMonster : BaseMonster
         _walkSpeed = 2f;
         _damage = 20f;
         _traceDist = 25f;
-        _attackDist = 3f;
+        _attackDist = 2f;
         _posX = Random.Range(-5f, 5f);
         _posY = Random.Range(-5f, 5f);
         _monsterMove = new Vector3(_posX,0f,_posY);
         _monsterWalkPos = this.transform.position + _monsterMove;
         walkstopDistance = 3f * 3f;
         _navMeshAgent.stoppingDistance = 0.5f;
-
-        _monsterHandCollider = GetComponentInChildren<Collider>();
+        
         ChangeState(MonsterState.IDLE);
         StartCoroutine(MonsterSetStateCo());
     }
 
     public bool IsPlayerEscape(bool escape)
     {
+        DeActiveHandColl();
         _isPlayerEscape = escape;
         return _isPlayerEscape;
     }
@@ -77,10 +78,12 @@ public class KeyMonster : BaseMonster
                  {
                      case MonsterState.IDLE:
                          _waitTimer += Time.deltaTime;
+                         
                          if (_waitTimer >= _idleWaitTime && !_isPlayerEscape )
                          {
                              _navMeshAgent.SetDestination(SetMonsterDestination()); // 몬스터의 목적지 갱신 로직
                              ChangeState(MonsterState.WALKING);
+
                              _waitTimer = 0f;
                          }
                          break;
@@ -93,10 +96,11 @@ public class KeyMonster : BaseMonster
                          }
                          break;
                      case MonsterState.TRACERUN:
+                         _waitTimer = 0f;
                          _navMeshAgent.SetDestination(_playerTransform.position);
                          break;
                      case MonsterState.ATTACK:
-                         
+                         _waitTimer = 0f;
 
                          break;
                  }
@@ -202,5 +206,16 @@ public class KeyMonster : BaseMonster
             _mainMonsterSFX.Play();
         }
     }
+
+    public void ActiveHandColl()
+    {
+        _monsterHandLeftCollider.enabled = true;
+        _monsterHandRightCollider.enabled = true;
+    }
     
+    public void DeActiveHandColl()
+    {
+        _monsterHandLeftCollider.enabled = false;
+        _monsterHandRightCollider.enabled = false;
+    }
 }
