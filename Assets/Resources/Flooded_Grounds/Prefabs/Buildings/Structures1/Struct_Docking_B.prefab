@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3341372}
   - component: {fileID: 2333856}
   - component: {fileID: 6415180}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Struct_Docking_B_LOD2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,7 +125,7 @@ GameObject:
   - component: {fileID: 3304482}
   - component: {fileID: 2378088}
   - component: {fileID: 6478882}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Struct_Docking_B_LOD1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -236,7 +236,7 @@ GameObject:
   m_Component:
   - component: {fileID: 442760}
   - component: {fileID: 20532068}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Struct_Docking_B
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -301,7 +301,7 @@ GameObject:
   - component: {fileID: 3340634}
   - component: {fileID: 2373116}
   - component: {fileID: 6407712}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Struct_Docking_B_LOD0
   m_TagString: Untagged
   m_Icon: {fileID: 0}

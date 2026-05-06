@@ -23,12 +23,15 @@ public class Player : MonoBehaviour
     private AudioSource _playerAudioSource;
     public Action PlayerDead;
     
-    //player move
+    //player move & jump
     private float _speed;
     private bool _isSprint;
     private float _usingStamina;
     private float _recoverStamina;
     private PlayerState _playerState;
+    private bool _isJump = false;
+    [SerializeField] private LayerMask groundLayer;
+    
     private bool _isDead;
 
     //inventory settings
@@ -106,6 +109,7 @@ public class Player : MonoBehaviour
 
     private void OnEnable()
     {
+        inputEventSO.SubscribeJump(SetJump);
         inputEventSO.SubscribeLook(SetLook);
         inputEventSO.SubscribeMove(SetMove);
         inputEventSO.SubscribePickup(ItemKeyClicked);
@@ -120,7 +124,8 @@ public class Player : MonoBehaviour
 
     private void OnDisable()
     {
-        inputEventSO.UnSubscribeMove(SetLook);
+        inputEventSO.UnSubscribeJump(SetJump);
+        inputEventSO.UnSubscribeLook(SetLook);
         inputEventSO.UnSubscribeMove(SetMove);
         inputEventSO.UnSubscribePickup(ItemKeyClicked);
         inputEventSO.UnSubscribeInteract(InteractItem);
@@ -147,6 +152,7 @@ public class Player : MonoBehaviour
         }
         Movement();
         PlayerRoation();
+        PlayerJump();
     }
 
     private void OpenUI(bool _isPlayerOpenUI)
@@ -200,12 +206,18 @@ public class Player : MonoBehaviour
         _playerAudioSource.Pause();
     }
 
+    private void OnSound()
+    {
+        if (_playerAudioSource.isPlaying) return;
+        _playerAudioSource.Play();
+    }
+
     #region PlayerSprint
     private IEnumerator PlayerSprint()
     {
         while (true)
         {
-            /*switch (_playerState)
+            switch (_playerState)
             {
                 case PlayerState.IDLE:
                     _stamina += _recoverStamina * Time.deltaTime;
@@ -233,12 +245,12 @@ public class Player : MonoBehaviour
                         }
                     }
                     break;
-                case PlayerState.DAMAGED
+                case PlayerState.DAMAGED:
                 case PlayerState.DEAD:
                     break;
                 
-            }*/
-            
+            }
+            /*
             if (_isSprint && _stamina > 0f)
             {
                 _stamina -= _usingStamina * Time.deltaTime;
@@ -261,6 +273,7 @@ public class Player : MonoBehaviour
                 _speed = 5f;
                 ChangeSound(_walkFootSound);
             }
+            */
             yield return null;
         }
     }
@@ -270,6 +283,10 @@ public class Player : MonoBehaviour
         if (_isSprint)
         {
             _playerState = PlayerState.SPRINT;
+        }
+        else
+        {
+            _playerState = PlayerState.WALK;
         }
     }
 
@@ -284,11 +301,10 @@ public class Player : MonoBehaviour
         if (other.CompareTag(_monsterHandTag) == true)
         {
             _isPlayerStop = true;
-            
             Vector3 forward = other.transform.forward;
             forward.y = 0;
             forward.Normalize();
-            _playerEscapeDir = (forward * 1f) + this.transform.position;
+            _playerEscapeDir = forward * 2f ;
         }
         
         if (other.CompareTag(_monster) == true)
@@ -306,6 +322,7 @@ public class Player : MonoBehaviour
         }
         
         _mental -= damage;
+
         if (_mental <= 0)
         {
             _isDead = true;
@@ -364,19 +381,26 @@ public class Player : MonoBehaviour
             }
             
         }
-
         timeElapsed += Time.deltaTime;
     }
     
 
     #endregion
 
-    #region Player move & rotaion
+    #region Player move & rotaion & Jump
     private void Movement()
     {
         if (verticalInput == 0 && horizontalInput == 0)
         {
             OffSound();
+        }
+        else if(verticalInput != 0 || horizontalInput == 0)
+        {
+            if (_speed >= 4f && _speed <= 6f)
+            {
+                OnSound();
+                ChangeSound(_walkFootSound);
+            }
         }
         Vector3 moveForward = transform.forward * verticalInput;
         Vector3 moveRight = transform.right * horizontalInput;
@@ -392,8 +416,43 @@ public class Player : MonoBehaviour
 
         Quaternion turnRotation = Quaternion.Euler(0, turnAmount, 0);
         rb.MoveRotation(rb.rotation * turnRotation);
-
     }
+
+    private void PlayerJump()
+    {
+        if (_isJump)
+        {
+            if (IsGrounded())
+            {
+                rb.AddForce(Vector3.up * 5f,ForceMode.Impulse);
+                _isJump = false;
+            }
+        }
+        else
+        {
+            return;
+        }
+    }
+    bool IsGrounded()
+    {
+        // 캐릭터의 반지름만큼 구체를 아래로 쏴서 체크
+        return Physics.CheckSphere(transform.position + Vector3.down * 0.9f, 0.2f, groundLayer);
+    }
+    
+    
+    
+    private void SetJump(bool jump)
+    {
+        if (_isJump == jump)
+        {
+            return;
+        }
+        else
+        {
+            _isJump = jump;
+        }
+    }
+    
     private void SetLook(Vector2 input)
     {
         _rotationInput = input.x * 0.1f;
@@ -546,6 +605,11 @@ public class Player : MonoBehaviour
 
         Gizmos.color = Color.yellow;
         Gizmos.DrawLine(center, endCenter);
+        
+        
+        // 바닥충돌 확인용
+        Gizmos.color = IsGrounded() ? Color.green : Color.red;
+        Gizmos.DrawWireSphere(transform.position + Vector3.down * 0.9f, 0.2f);
     }
 
 }
