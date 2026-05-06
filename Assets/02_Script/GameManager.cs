@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     [SerializeField] private Player _player;
+    public static Action OnGameOver;
     public GameObject startPoint;
     public bool isGamePause = false;
     public bool isGameOver = false;
@@ -31,6 +32,7 @@ public class GameManager : MonoBehaviour
         if (_player != null)
         {
             SceneManager.LoadScene("Main");
+            isGameOver = false;
             /*_player.transform.position = startPoint.transform.position;
             _player.init();*/
         }
@@ -51,6 +53,7 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         isGameOver = true;
+        OnGameOver?.Invoke();
     }
 
     public void QuitGame()

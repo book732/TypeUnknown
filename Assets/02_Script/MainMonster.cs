@@ -12,12 +12,21 @@ public class MainMonster : BaseMonster
     [SerializeField] private AudioSource _mainMonsterSFX;
     [SerializeField] private AudioClip _chaseClip;
     [SerializeField] private AudioClip _attackClip;
-
+    
+    
     private void OnEnable()
     {
+        GameManager.OnGameOver += StopMainMonsterSound;
         StartCoroutine(MonsterState());
         StartCoroutine(MonsterAction());
     }
+
+    private void OnDisable()
+    {
+        GameManager.OnGameOver -= StopMainMonsterSound;
+        StopAllCoroutines();
+    }
+    
     protected override void Init()
     {
         base.Init();
@@ -34,7 +43,12 @@ public class MainMonster : BaseMonster
             other.GetComponent<Player>().PlayerTakeDamage(_damage);
         }
     }
-
+    
+    private void StopMainMonsterSound()
+    {
+        _mainMonsterSFX.Stop();
+    }
+    
     private IEnumerator MonsterState()
     {
         while (true)

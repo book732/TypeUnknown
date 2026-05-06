@@ -25,13 +25,27 @@ public class KeyMonster : BaseMonster
     private float _idleWaitTime;
     private float _attackTimer;
     private float _attackTime;
-    
     private bool _isPlayerEscape;
     [SerializeField] private Collider _monsterHandLeftCollider;
     [SerializeField] private Collider _monsterHandRightCollider;
     
     // target has in navmesh
     private bool isTargetSafe = false;
+
+    private void OnEnable()
+    {
+        GameManager.OnGameOver += StopMonsterAudio;
+    }
+
+    private void OnDisable()
+    {
+        GameManager.OnGameOver -= StopMonsterAudio;
+    }
+    
+    private void StopMonsterAudio()
+    {
+        _mainMonsterSFX.Stop();
+    }
     
     protected override void Init()
     {
@@ -103,7 +117,7 @@ public class KeyMonster : BaseMonster
                          _waitTimer = 0f;
 
                          break;
-                 }
+                     }
                  yield return _ws;
              }
              yield return null;
@@ -200,7 +214,7 @@ public class KeyMonster : BaseMonster
     
     private void ChangedSFX(AudioClip clip)
     {
-        if (_mainMonsterSFX.clip != clip)
+        if (_mainMonsterSFX.clip != clip && GameManager.Instance.isGameOver==false)
         {
             _mainMonsterSFX.clip = clip;
             _mainMonsterSFX.Play();
