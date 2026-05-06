@@ -22,7 +22,7 @@ public class PlayerInput : MonoBehaviour
 
     private void Crouch(InputAction.CallbackContext context)
     {
-
+        
     }
 
     private void Sprint(InputAction.CallbackContext context)
@@ -59,18 +59,27 @@ public class PlayerInput : MonoBehaviour
 
     private void Look(InputAction.CallbackContext context)
     {
-        Vector2 input = context.ReadValue<Vector2>();
-        inputEventSO.RaiseLookEvent(input);
+        if (context.performed)
+        {
+            Vector2 input = context.ReadValue<Vector2>();
+            inputEventSO.RaiseLookEvent(input);
+        }
     }
 
     private void Jump(InputAction.CallbackContext context)
     {
-
+        if (context.performed) 
+        {
+            inputEventSO.RaiseJumpEvent(true); 
+        }
     }
 
     private void Escape(InputAction.CallbackContext context)
     {
-        inputEventSO.RaiseEscapeEvent();
+        if (context.performed)
+        {
+            inputEventSO.RaiseEscapeEvent();
+        }
     }
 
     void BindAction(InputAction action, Action<InputAction.CallbackContext> callback)
@@ -112,10 +121,8 @@ public class PlayerInput : MonoBehaviour
 
     private void OnMove(InputAction.CallbackContext ctx)
     {
-
-        Vector2 input = ctx.ReadValue<Vector2>();
-        //  Debug.Log(input);
-        inputEventSO.RaiseMoveEvent(input);
+            Vector2 input = ctx.ReadValue<Vector2>();
+            inputEventSO.RaiseMoveEvent(input);
     }
 
     private void OnEnable()
@@ -136,6 +143,7 @@ public class PlayerInput : MonoBehaviour
     }
     private void OnDisable()
     {
+        UnBindAction(inputActions.Player.Jump, Jump);
         UnBindAction(inputActions.Player.Move, OnMove);
         UnBindAction(inputActions.Player.Pick, GetItem);
         UnBindActionOnlyforPerformed(inputActions.Player.Interact, InteractItem);

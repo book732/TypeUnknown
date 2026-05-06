@@ -29,6 +29,9 @@ public class KeyMonster : BaseMonster
     private bool _isPlayerEscape;
     private Collider _monsterHandCollider;
     
+    // target has in navmesh
+    private bool isTargetSafe = false;
+    
     protected override void Init()
     {
         base.Init();
@@ -90,24 +93,6 @@ public class KeyMonster : BaseMonster
                          }
                          break;
                      case MonsterState.TRACERUN:
-                         /*NavMeshHit hit;
-                         
-                         if (NavMesh.SamplePosition(_playerTransform.position, out hit, 4f, NavMesh.AllAreas))
-                         {
-                             _navMeshAgent.SetDestination(hit.position);Debug.Log($"[성공] 네비메시 좌표 찾음: {hit.position}");
-    
-                             // 2단계 통과 확인: 해당 위치로 가는 경로가 실제로 이어져 있는지 확인
-                             bool isPathValid = _navMeshAgent.SetDestination(hit.position);
-                             if (!isPathValid)
-                             {
-                                 Debug.LogWarning("[실패] 좌표는 찾았지만 몬스터가 그곳으로 갈 수 없는 상태입니다 (길이 끊김 등).");
-                             }
-                         }
-                         else
-                         {
-                            
-                         }*/
-         
                          _navMeshAgent.SetDestination(_playerTransform.position);
                          break;
                      case MonsterState.ATTACK:
@@ -123,12 +108,14 @@ public class KeyMonster : BaseMonster
     private void CheckMonsterState()
     {
             float dist = (_playerTransform.position - this.transform.position).sqrMagnitude;
-            if (dist < _attackDist * _attackDist && !_isPlayerEscape)
+            NavMeshHit hit;
+            isTargetSafe = NavMesh.SamplePosition(_playerTransform.position, out hit, 2f, NavMesh.AllAreas);
+            if (dist < _attackDist * _attackDist && !_isPlayerEscape && isTargetSafe)
             {
                 //this.transform.LookAt(_playerTransform);
                 ChangeState(MonsterState.ATTACK);
             }
-            else if (dist < _traceDist * _traceDist && !_isPlayerEscape)
+            else if (dist < _traceDist * _traceDist && !_isPlayerEscape && isTargetSafe)
             {
                 //_monsterState = MonsterState.TRACERUN;
                 ChangeState(MonsterState.TRACERUN);
@@ -193,8 +180,17 @@ public class KeyMonster : BaseMonster
     {
         _posX = Random.Range(-10f, 10f);
         _posY = Random.Range(-10f, 10f);
-        _monsterMove = new Vector3(_posX,0f,_posY);
-        _monsterWalkPos =  this.transform.position + _monsterMove;
+        _monsterMove = new Vector3(_posX,0f,_posY) + this.transform.position;
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(_monsterMove, out hit, 2f, NavMesh.AllAreas)) 
+        {
+            _monsterWalkPos =  hit.position;
+        }
+        else
+        {
+            _monsterWalkPos =  this.transform.position;
+        }
+
         return  _monsterWalkPos;
     }
     

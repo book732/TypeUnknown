@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     [SerializeField] private Player _player;
-    [SerializeField] private GameObject _startPoint;
+    public GameObject startPoint;
     public bool isGamePause = false;
     public bool isGameOver = false;
     
@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour
     {
         if (_player != null)
         {
-            _player.transform.position = _startPoint.transform.position;
+            _player.transform.position = startPoint.transform.position;
             _player.init();
         }
     }
