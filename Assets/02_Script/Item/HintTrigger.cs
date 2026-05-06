@@ -3,16 +3,13 @@ using UnityEngine;
 public class HintTrigger : MonoBehaviour
 {
     [SerializeField] Hint hint;
-
+    [SerializeField] private int _hintNumber;
 
     private void OnTriggerEnter(Collider other)
     {
         if (other != null && other.CompareTag("Player"))
         {
-
-            hint.ShowHint();
-
-
+            hint.ShowHint(_hintNumber);
         }
     }
     private void OnTriggerExit(Collider other)
@@ -20,7 +17,6 @@ public class HintTrigger : MonoBehaviour
         if (other != null && other.CompareTag("Player"))
         {
             hint.CloseHint();
-            Destroy(gameObject);
         }
     }
 }
