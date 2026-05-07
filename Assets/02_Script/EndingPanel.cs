@@ -9,6 +9,7 @@ public class EndingPanel : MonoBehaviour
 
     private void OnEnable()
     {
+        Cursor.visible = true;
         _endRestartButton.onClick.AddListener(EndingRestartButton);
         _endQuitButton.onClick.AddListener(EndingQuitButton);
     }

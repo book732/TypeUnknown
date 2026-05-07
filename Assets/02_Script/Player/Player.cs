@@ -141,7 +141,7 @@ public class Player : MonoBehaviour
         inputEventSO.SubscribeMenu(OpenUI);
         inputEventSO.SubscribeInven(OpenInventory);
         GameManager.OnGameOver += StopPlayerAudio;
-        StartCoroutine(PlayerSprint());
+        StartCoroutine(PlayerStateCheck());
     }
 
 
@@ -157,7 +157,7 @@ public class Player : MonoBehaviour
         inputEventSO.UnSubscribeMenu(OpenUI);
         inputEventSO.UnSubscribeInven(OpenInventory);
         GameManager.OnGameOver -= StopPlayerAudio;
-        StopCoroutine(PlayerSprint());
+        StopCoroutine(PlayerStateCheck());
     }
 
     private void FixedUpdate()
@@ -173,6 +173,7 @@ public class Player : MonoBehaviour
 
         if (_isPlayerStop)
         {
+            OffSound();
             _timer += Time.fixedDeltaTime;
             //player는 움직일수 없는상태.
             PlayerView();
@@ -210,11 +211,13 @@ public class Player : MonoBehaviour
         if (_isPlayerOpenUI)
         {
             GameManager.Instance.PauseGame();
+            Cursor.visible = true;
             _inGameUI.SetActive(true);
         }
         else
         {
             GameManager.Instance.ResumeGame();
+            Cursor.visible = false;
             _inGameUI.SetActive(false);
         }
     }
@@ -283,7 +286,7 @@ public class Player : MonoBehaviour
     }
 
     #region PlayerSprint
-    private IEnumerator PlayerSprint()
+    private IEnumerator PlayerStateCheck()
     {
         while (true)
         {
@@ -323,30 +326,6 @@ public class Player : MonoBehaviour
                     break;
 
             }
-            /*
-            if (_isSprint && _stamina > 0f)
-            {
-                _stamina -= _usingStamina * Time.deltaTime;
-                _stamina = Mathf.Max(_stamina, 0f);
-                _speed = 10f;
-                ChangeSound(_runFootSound);
-
-                if (_stamina <= 0f)
-                {
-                    _speed = 0.5f;
-                    ChangeSound(_cantSprint);
-                    yield return new WaitForSecondsRealtime(3.0f);
-                }
-            }
-            //!_isSprint || _stamina<=0
-            else
-            {
-                _stamina += _recoverStamina * Time.deltaTime;
-                _stamina = Mathf.Min(_stamina, 100f);
-                _speed = 5f;
-                ChangeSound(_walkFootSound);
-            }
-            */
             yield return null;
         }
     }
@@ -463,6 +442,8 @@ public class Player : MonoBehaviour
         isMoving = _verticalInput != 0 || _horizontalInput != 0;
         Vector3 moveForward = transform.forward * _verticalInput;
         Vector3 moveRight = transform.right * _horizontalInput;
+        moveForward.y = 0f;
+        moveRight.y = 0f;
         Vector3 moveDirection = (moveForward + moveRight).normalized;
         Vector3 movement = moveDirection * _speed * Time.deltaTime;
         _rb.MovePosition(transform.position + movement);
