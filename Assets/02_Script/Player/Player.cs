@@ -26,7 +26,7 @@ public class Player : MonoBehaviour
     [SerializeField] private AudioSource _healAudioSource;
     private AudioSource _playerAudioSource;
     public Action PlayerDead;
-    
+
     //player move & jump
 
     private bool isMoving;
@@ -39,7 +39,7 @@ public class Player : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     private bool _isDead;
 
-    
+
     //player moveSettings
     private Rigidbody _rb;
     private float _horizontalInput;
@@ -141,7 +141,7 @@ public class Player : MonoBehaviour
         inputEventSO.SubscribeMenu(OpenUI);
         inputEventSO.SubscribeInven(OpenInventory);
         GameManager.OnGameOver += StopPlayerAudio;
-        StartCoroutine(PlayerSprint());
+        StartCoroutine(PlayerStateCheck());
     }
 
 
@@ -157,9 +157,9 @@ public class Player : MonoBehaviour
         inputEventSO.UnSubscribeMenu(OpenUI);
         inputEventSO.UnSubscribeInven(OpenInventory);
         GameManager.OnGameOver -= StopPlayerAudio;
-        StopCoroutine(PlayerSprint());
+        StopCoroutine(PlayerStateCheck());
     }
-    
+
     private void FixedUpdate()
     {
         /* //테스트용시간에따른 멘탈감소 코드 
@@ -190,6 +190,12 @@ public class Player : MonoBehaviour
         PlayerJump();
     }
 
+    private void Update()
+    {
+        exisitingItem = Existitem();
+        ShowPickupUI();
+    }
+
     public void RestoreHealth(float value)
     {
         if (!_isDead)
@@ -205,11 +211,13 @@ public class Player : MonoBehaviour
         if (_isPlayerOpenUI)
         {
             GameManager.Instance.PauseGame();
+            Cursor.visible = true;
             _inGameUI.SetActive(true);
         }
         else
         {
             GameManager.Instance.ResumeGame();
+            Cursor.visible = false;
             _inGameUI.SetActive(false);
         }
     }
@@ -273,12 +281,12 @@ public class Player : MonoBehaviour
         }
         else if (!isMoving && !_isSprint)
         {
-             _playerState = PlayerState.IDLE;
+            _playerState = PlayerState.IDLE;
         }
     }
 
     #region PlayerSprint
-    private IEnumerator PlayerSprint()
+    private IEnumerator PlayerStateCheck()
     {
         while (true)
         {
@@ -318,34 +326,10 @@ public class Player : MonoBehaviour
                     break;
 
             }
-            /*
-            if (_isSprint && _stamina > 0f)
-            {
-                _stamina -= _usingStamina * Time.deltaTime;
-                _stamina = Mathf.Max(_stamina, 0f);
-                _speed = 10f;
-                ChangeSound(_runFootSound);
-
-                if (_stamina <= 0f)
-                {
-                    _speed = 0.5f;
-                    ChangeSound(_cantSprint);
-                    yield return new WaitForSecondsRealtime(3.0f);
-                }
-            }
-            //!_isSprint || _stamina<=0
-            else
-            {
-                _stamina += _recoverStamina * Time.deltaTime;
-                _stamina = Mathf.Min(_stamina, 100f);
-                _speed = 5f;
-                ChangeSound(_walkFootSound);
-            }
-            */
             yield return null;
         }
     }
-    
+
     private void Sprint(bool _isRun)
     {
         _isSprint = _isRun;
@@ -390,7 +374,7 @@ public class Player : MonoBehaviour
             StartCoroutine(PlayerDeadUIWait());
         }
     }
-    
+
     private void StopPlayerAudio()
     {
         _playerAudioSource.Stop();
@@ -417,7 +401,7 @@ public class Player : MonoBehaviour
         {
             OnSound();
             _keyMonster.IsPlayerEscape(true);
-            _rb.AddForce(_playerEscapeDir , ForceMode.Impulse);
+            _rb.AddForce(_playerEscapeDir, ForceMode.Impulse);
             _camera.FollowOffset = _baseCamera;
             _isPlayerStop = false;
             timeElapsed = 0f;
@@ -457,11 +441,13 @@ public class Player : MonoBehaviour
         isMoving = _verticalInput != 0 || _horizontalInput != 0;
         Vector3 moveForward = transform.forward * _verticalInput;
         Vector3 moveRight = transform.right * _horizontalInput;
+        moveForward.y = 0f;
+        moveRight.y = 0f;
         Vector3 moveDirection = (moveForward + moveRight).normalized;
         Vector3 movement = moveDirection * _speed * Time.deltaTime;
         _rb.MovePosition(transform.position + movement);
     }
-    
+
     private void PlayerRoation()
     {
         float mouseX = _rotationInput.x;
@@ -480,7 +466,7 @@ public class Player : MonoBehaviour
         {
             if (IsGrounded())
             {
-                _rb.AddForce(Vector3.up * 5f,ForceMode.Impulse);
+                _rb.AddForce(Vector3.up * 5f, ForceMode.Impulse);
                 _isJump = false;
             }
         }
@@ -592,11 +578,7 @@ public class Player : MonoBehaviour
             ItemPoolManager.Instance.Release(itemPickupData);
         }
     }
-    private void Update()
-    {
-        exisitingItem = Existitem();
-        ShowPickupUI();
-    }
+
 
     private ItemPickup Existitem()
     {
@@ -606,25 +588,12 @@ public class Player : MonoBehaviour
         Vector3 direction = transform.forward;
         Quaternion rotation = transform.rotation;
         float distance = 2f;
-
-        if (Physics.BoxCast(startposition, halfextension, direction, out hit, rotation, distance))
+        int itemLayerMask = LayerMask.GetMask("item");
+        if (Physics.BoxCast(startposition, halfextension, direction, out hit, rotation, distance, itemLayerMask))
         {
+            ItemPickup itemPickupData = hit.collider.GetComponent<ItemPickup>();
+            return itemPickupData;
 
-
-
-
-            if (hit.collider.CompareTag("Item"))
-            {
-                ItemPickup itemPickupData = hit.collider.GetComponent<ItemPickup>();
-                return itemPickupData;
-
-
-
-            }
-            else
-            {
-                return null;
-            }
         }
         else
         {

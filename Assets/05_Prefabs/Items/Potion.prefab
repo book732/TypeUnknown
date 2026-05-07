@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8972529079342897986}
   - component: {fileID: 879310412940817046}
   - component: {fileID: 3485845458567916092}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Potion
   m_TagString: Item
   m_Icon: {fileID: 0}
@@ -80,7 +80,7 @@ GameObject:
   - component: {fileID: 2181554962651050448}
   - component: {fileID: 388168382778486984}
   - component: {fileID: 4999697586577197050}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: FirstAid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
