@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
         }
 
         _player.PlayerDead += PlayerRespawn;
+        Cursor.visible = false;
     }
 
     public void PlayerRespawn()

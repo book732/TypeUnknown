@@ -12,7 +12,6 @@ public class KeyMonster : BaseMonster
     [SerializeField] private AudioSource _mainMonsterSFX;
     [SerializeField] private AudioClip _chaseClip;
     [SerializeField] private AudioClip _attackClip;
-    [SerializeField] private AudioClip _mainClip;
     private Vector3 _monsterMove;
     private Vector3 _monsterWalkPos;
     // test 
@@ -166,7 +165,6 @@ public class KeyMonster : BaseMonster
                 _animator.SetBool(hashIsAttack, false);
                 _navMeshAgent.isStopped = true;
                 _navMeshAgent.ResetPath();
-                ChangedSFX(_mainClip);
                 break;
             case MonsterState.WALKING:
                 _animator.SetBool(hashIsRun, false);
