@@ -189,6 +189,12 @@ public class Player : MonoBehaviour
         PlayerJump();
     }
 
+    private void Update()
+    {
+        exisitingItem = Existitem();
+        ShowPickupUI();
+    }
+
     public void RestoreHealth(float value)
     {
         if (!_isDead)
@@ -592,11 +598,7 @@ public class Player : MonoBehaviour
             ItemPoolManager.Instance.Release(itemPickupData);
         }
     }
-    private void Update()
-    {
-        exisitingItem = Existitem();
-        ShowPickupUI();
-    }
+
 
     private ItemPickup Existitem()
     {
