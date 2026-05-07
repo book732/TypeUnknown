@@ -103140,7 +103140,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uAD50\uD68C"
+  m_text: "\uC131"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a69933e70e541ff4abe0f0f0bae5bb7d, type: 2}
   m_sharedMaterial: {fileID: -2841696183521315581, guid: a69933e70e541ff4abe0f0f0bae5bb7d, type: 2}
@@ -130048,7 +130048,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1007632323}
   m_Layer: 5
-  m_Name: GameObject
+  m_Name: ShowAreaText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
