@@ -345,7 +345,6 @@ public class Player : MonoBehaviour
     {
         if (other.CompareTag(_monsterHandTag) == true)
         {
-            OffSound();
             _isPlayerStop = true;
             Vector3 forward = other.transform.forward;
             forward.y = 0;
@@ -365,7 +364,7 @@ public class Player : MonoBehaviour
         _mental = Mathf.Clamp(_mental - damage, 0f, _maxMental);
         OnHpchanged(_mental, _maxMental);
         _hitAudioSource.PlayOneShot(_hitAudioSource.clip);
-
+        
         if (_mental <= 0)
         {
             _isDead = true;
