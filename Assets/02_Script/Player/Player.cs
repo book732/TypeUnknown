@@ -201,12 +201,14 @@ public class Player : MonoBehaviour
         {
             GameManager.Instance.PauseGame();
             Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
             _inGameUI.SetActive(true);
         }
         else
         {
             GameManager.Instance.ResumeGame();
             Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
             _inGameUI.SetActive(false);
         }
     }

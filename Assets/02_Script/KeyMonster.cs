@@ -59,7 +59,7 @@ public class KeyMonster : BaseMonster
         _attackTime = 3f;
         //
         
-        _runSpeed = 4f;
+        _runSpeed = 7f;
         _walkSpeed = 2f;
         _damage = 20f;
         _traceDist = 25f;

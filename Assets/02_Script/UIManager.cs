@@ -1,7 +1,4 @@
-using System;
 using UnityEngine;
-using UnityEngine.Audio;
-using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 

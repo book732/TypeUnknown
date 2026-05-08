@@ -211227,8 +211227,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   _player: {fileID: 12431232}
-  startPoint: {fileID: 0}
-  isGamePause: 0
   isGameOver: 0
 --- !u!4 &1855173254
 Transform:
@@ -242845,6 +242843,13 @@ PrefabInstance:
     - target: {fileID: 1893263247277839347, guid: 9838c9170f6299748ae849cbd497bd9e, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1917370720664237292, guid: 9838c9170f6299748ae849cbd497bd9e, type: 3}
+      propertyPath: m_text
+      value: "\uC774\uB3D9 :  WASD\n\uB2EC\uB9AC\uAE30 : SHIFT\n\uC544\uC774\uD15C
+        \uCC3D : I\n\uC810\uD504 : SPACE\n\uC544\uC774\uD15C \uC2B5\uB4DD : E\n\uC544\uC774\uD15C
+        \uBCC0\uACBD : \uB9C8\uC6B0\uC2A4 \uD720\n\uC0C1\uD638\uC791\uC6A9 : \uB9C8\uC6B0\uC2A4
+        \uC88C\uD074\uB9AD\n\uD0C8\uCD9C : A,D"
       objectReference: {fileID: 0}
     - target: {fileID: 1920835621069459908, guid: 9838c9170f6299748ae849cbd497bd9e, type: 3}
       propertyPath: m_IsActive
