@@ -32,9 +32,10 @@ public class GameManager : MonoBehaviour
     {
         if (_player != null)
         {
+            _player.gameObject.SetActive(false);
             SceneManager.LoadScene("Main");
             isGameOver = false;
-            /*_player.transform.position = startPoint.transform.position;
+            /*_plwayer.transform.position = startPoint.transform.position;
             _player.init();*/
         }
     }

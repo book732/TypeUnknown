@@ -1,10 +1,7 @@
 using System;
 using System.Collections;
 using Unity.Cinemachine;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.Splines.Interpolators;
 
 
 public class Player : MonoBehaviour
@@ -13,6 +10,8 @@ public class Player : MonoBehaviour
     [SerializeField] private float _stamina; // mp 역할
     [SerializeField] private float _mental; // hp 역할
     [SerializeField] private float _maxMental = 100f; //최대 hp역할 
+    
+    // player sound settings
     [SerializeField] private AudioClip _cantSprint;
     [SerializeField] private AudioClip _walkFootSound;
     [SerializeField] private AudioClip _runFootSound;
@@ -78,7 +77,6 @@ public class Player : MonoBehaviour
     //escape screen settings 
     private Vector3 _baseCamera;
     private CinemachineImpulseSource _impulseSource;
-    //private Vector3 _monsterPos;
     private Vector3 _playerEscapeDir;
     //UI settings
     [SerializeField] public InGameUIManager uIManager;
@@ -121,7 +119,7 @@ public class Player : MonoBehaviour
         _isPlayerStop = false;
         _escapeClickCount = 0;
         _requiredEscapeClicks = 5;
-        _rotateSpeed = 10f;
+        _rotateSpeed = 1f;
         _verticalRotation = 0f;
         _camera = GetComponentInChildren<CinemachineFollow>();
         _baseCamera = _cameraPos.transform.localPosition;
@@ -162,15 +160,6 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
-        /* //테스트용시간에따른 멘탈감소 코드 
-         _timer += Time.fixedDeltaTime;
-         if (_timer > 1f)
-         {
-             PlayerTakeDamage(5f);
-             _timer = 0f;
-         }*/
-
-
         if (_isPlayerStop)
         {
             OffSound();
@@ -338,9 +327,6 @@ public class Player : MonoBehaviour
     #endregion
 
 
-
-
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag(_monsterHandTag) == true)
@@ -367,6 +353,7 @@ public class Player : MonoBehaviour
         
         if (_mental <= 0)
         {
+            OffSound();
             _isDead = true;
             GameManager.Instance.GameOver();
             _inGameUI.SetActive(false);
@@ -377,6 +364,7 @@ public class Player : MonoBehaviour
 
     private void StopPlayerAudio()
     {
+        OffSound();
         _playerAudioSource.Stop();
         _hitAudioSource.Stop();
     }
@@ -454,7 +442,7 @@ public class Player : MonoBehaviour
         float mouseY = _rotationInput.y;
         _horizontalRotation += mouseX * _rotateSpeed;
         _horizontalRotation %= 360f;
-        _verticalRotation -= mouseY * _rotateSpeed * 0.05f;
+        _verticalRotation -= mouseY * _rotateSpeed * 0.3f;
         _verticalRotation = Mathf.Clamp(_verticalRotation, -10f, 15f);
         Quaternion targetRotation = Quaternion.Euler(_verticalRotation, _horizontalRotation, 0);
         _rb.MoveRotation(targetRotation);
